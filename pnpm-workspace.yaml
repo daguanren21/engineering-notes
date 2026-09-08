@@ -1,0 +1,5 @@
+packages: []
+allowBuilds:
+  esbuild: true
+minimumReleaseAgeExclude:
+  - markdown-it-anchor@10.0.0

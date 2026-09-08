@@ -1,0 +1,31 @@
+{
+  "name": "engineering-notes",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "typecheck": "vue-tsc --noEmit",
+    "build": "vue-tsc --noEmit && vite-ssg build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@unhead/vue": "^2.1.17",
+    "vue": "^3.5.42",
+    "vue-router": "^5.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.4.1",
+    "@vitejs/plugin-vue": "^6.0.8",
+    "gray-matter": "^4.0.3",
+    "markdown-it-anchor": "^10.0.0",
+    "typescript": "^6.0.3",
+    "unplugin-vue-markdown": "^32.1.1",
+    "vite": "^8.2.2",
+    "vite-plugin-pages": "^0.33.3",
+    "vite-ssg": "^28.3.0",
+    "vue-tsc": "^3.3.11",
+    "zod": "^4.5.4"
+  },
+  "packageManager": "pnpm@11.22.0"
+}
