@@ -38,6 +38,9 @@ jobs:
       - name: Test context handoff model
         run: pnpm test:context-demo
 
+      - name: Test prompt cache model
+        run: pnpm test:cache-demo
+
       - name: Build site
         run: pnpm build
         env:

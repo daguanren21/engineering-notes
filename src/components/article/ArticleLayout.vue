@@ -10,6 +10,9 @@ const isSourceStudy = computed(() => props.sourceKind === "source-code");
 const ContextHandoffDemo = defineAsyncComponent(
   () => import("../demos/context-handoff/ContextHandoffDemo.vue"),
 );
+const PromptCacheDemo = defineAsyncComponent(
+  () => import("../demos/prompt-cache/PromptCacheDemo.vue"),
+);
 
 useHead({
   title: computed(() => `${props.title} · 工程手记`),
@@ -84,6 +87,7 @@ useHead({
 
       <div class="prose">
         <ContextHandoffDemo v-if="interactiveDemo === 'context-handoff'" />
+        <PromptCacheDemo v-else-if="interactiveDemo === 'prompt-cache'" />
         <slot />
 
         <footer class="article-end">
