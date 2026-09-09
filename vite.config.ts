@@ -75,6 +75,9 @@ export default defineConfig({
           if (html.includes("<PromptCacheDemo />")) {
             imports.push('import PromptCacheDemo from "../../components/demos/prompt-cache/PromptCacheDemo.vue";');
           }
+          if (html.includes("<GraphLoopHarnessDiagram />")) {
+            imports.push('import GraphLoopHarnessDiagram from "../../components/article/GraphLoopHarnessDiagram.vue";');
+          }
           const script = imports.length
             ? `<script setup lang="ts">\n${imports.join("\n")}\n</script>`
             : "";
@@ -97,6 +100,9 @@ export default defineConfig({
             }
             if (token.info === "demo prompt-cache") {
               return "<PromptCacheDemo />\n";
+            }
+            if (token.info === "diagram graph-loop-harness") {
+              return "<GraphLoopHarnessDiagram />\n";
             }
           }
           return renderFence(tokens, index, options, env, self);
