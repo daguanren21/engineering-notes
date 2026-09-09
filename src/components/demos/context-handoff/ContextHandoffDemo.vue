@@ -225,10 +225,10 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <section class="context-demo" aria-labelledby="交互演示">
+  <section class="context-demo" aria-labelledby="subagent-demo">
     <header class="demo-intro">
       <p class="demo-kicker">CONTEXT HANDOFF / 可操作时间线</p>
-      <h2 id="交互演示">交互演示：上下文不会自己流动</h2>
+      <h2 id="subagent-demo">交互演示：上下文不会自己流动</h2>
       <p class="demo-intro__lede">
         <strong>浏览器端概念模拟。</strong>
         这里仅运行本地 TypeScript 数据函数，不发起模型请求、不访问网络或文件系统，也不把步骤数或条目数解释为实测 token 与供应商行为。

@@ -67,7 +67,18 @@ export default defineConfig({
       transforms: {
         after(html, id) {
           if (!id.includes("/src/pages/articles/")) return html;
-          return `<ArticleLayout v-bind="frontmatter">${html}</ArticleLayout>`;
+          // Load demo dependencies with the lazy article route, before hash scrolling.
+          const imports: string[] = [];
+          if (html.includes("<ContextHandoffDemo />")) {
+            imports.push('import ContextHandoffDemo from "../../components/demos/context-handoff/ContextHandoffDemo.vue";');
+          }
+          if (html.includes("<PromptCacheDemo />")) {
+            imports.push('import PromptCacheDemo from "../../components/demos/prompt-cache/PromptCacheDemo.vue";');
+          }
+          const script = imports.length
+            ? `<script setup lang="ts">\n${imports.join("\n")}\n</script>`
+            : "";
+          return `${script}<ArticleLayout v-bind="frontmatter">${html}</ArticleLayout>`;
         },
       },
       wrapperDiv: false,
@@ -77,6 +88,20 @@ export default defineConfig({
         typographer: true,
       },
       markdownSetup(markdown) {
+        const renderFence = markdown.renderer.rules.fence!;
+        markdown.renderer.rules.fence = (tokens, index, options, env, self) => {
+          const token = tokens[index];
+          if (token.content === "") {
+            if (token.info === "demo context-handoff") {
+              return "<ContextHandoffDemo />\n";
+            }
+            if (token.info === "demo prompt-cache") {
+              return "<PromptCacheDemo />\n";
+            }
+          }
+          return renderFence(tokens, index, options, env, self);
+        };
+
         MarkdownItAnchor(
           markdown as unknown as Parameters<typeof MarkdownItAnchor>[0],
           { slugify: slugifyHeading },
