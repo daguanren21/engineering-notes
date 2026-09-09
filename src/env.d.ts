@@ -15,6 +15,7 @@ declare module "*.md" {
   export const description: unknown;
   export const publishedAt: unknown;
   export const sourceKind: unknown;
+  export const interactiveDemo: unknown;
   export const sourceTitle: unknown;
   export const sourceUrl: unknown;
   export const sourceAuthor: unknown;

@@ -11,6 +11,7 @@ export interface ArticleFrontmatter {
   description: string;
   publishedAt: string;
   sourceKind?: "article" | "source-code";
+  interactiveDemo?: "context-handoff";
   sourceTitle: string;
   sourceUrl: string;
   sourceAuthor: string;
@@ -33,6 +34,7 @@ export const ArticleFrontmatterSchema: z.ZodType<ArticleFrontmatter> = z.object(
   description: z.string().min(1),
   publishedAt: z.iso.date(),
   sourceKind: z.enum(["article", "source-code"]).optional(),
+  interactiveDemo: z.literal("context-handoff").optional(),
   sourceTitle: z.string().min(1),
   sourceUrl: z.url(),
   sourceAuthor: z.string().min(1),

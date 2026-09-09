@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { useHead } from "@unhead/vue";
-import { computed } from "vue";
+import { computed, defineAsyncComponent } from "vue";
 import type { ArticleFrontmatter } from "../../content/schema";
 import { formatDate } from "../../content/articles";
 
 const props = defineProps<ArticleFrontmatter>();
 const issueLabel = computed(() => String(props.issue).padStart(2, "0"));
 const isSourceStudy = computed(() => props.sourceKind === "source-code");
+const ContextHandoffDemo = defineAsyncComponent(
+  () => import("../demos/context-handoff/ContextHandoffDemo.vue"),
+);
 
 useHead({
   title: computed(() => `${props.title} · 工程手记`),
@@ -80,6 +83,7 @@ useHead({
       </nav>
 
       <div class="prose">
+        <ContextHandoffDemo v-if="interactiveDemo === 'context-handoff'" />
         <slot />
 
         <footer class="article-end">
