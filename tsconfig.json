@@ -23,6 +23,7 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "src/**/*.md",
+    "scripts/**/*.ts",
     "vite.config.ts"
   ]
 }

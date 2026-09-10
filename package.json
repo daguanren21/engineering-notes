@@ -8,8 +8,14 @@
     "typecheck": "vue-tsc --noEmit",
     "test:context-demo": "node --test src/components/demos/context-handoff/model.test.ts",
     "test:cache-demo": "node --test src/components/demos/prompt-cache/model.test.ts",
+    "test:ingest": "node --test scripts/ingest/*.test.ts",
     "build": "vue-tsc --noEmit && vite-ssg build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "digest": "node scripts/ingest/run.ts",
+    "digest:dry": "node scripts/ingest/run.ts --dry-run"
+  },
+  "engines": {
+    "node": ">=22.18"
   },
   "dependencies": {
     "@unhead/vue": "^2.1.17",
@@ -19,6 +25,7 @@
   "devDependencies": {
     "@types/node": "^26.4.1",
     "@vitejs/plugin-vue": "^6.0.8",
+    "fast-xml-parser": "^5.11.1",
     "gray-matter": "^4.0.3",
     "markdown-it-anchor": "^10.0.0",
     "typescript": "^6.0.3",

@@ -1,0 +1,246 @@
+{
+  "$comment": [
+    "Sources for the daily digest. Every URL here was probed and returns entries when",
+    "parsed; anything that 404'd, returned HTML, or parsed to zero items was dropped.",
+    "",
+    "kind orders the pick: news > release > community > commits. A written article",
+    "always outranks a raw commit stream, however recent the commit.",
+    "",
+    "`author` overrides the feed's own attribution. It is set where the feed reports a",
+    "username or bot instead of a name, which is every GitHub-hosted feed.",
+    "xAccounts are only queried when X_BEARER_TOKEN is set (official API, paid tier)",
+    "xAccounts are only queried when X_BEARER_TOKEN is set (official API) or",
+    "DIGEST_BRIDGE_TEMPLATE points at an RSS bridge you control, so leaving them in",
+    "place costs nothing without credentials.",
+    "Matt Pocock authors the grill-me skill this repo uses, installed from mattpocock/skills."
+  ],
+  "xAccounts": [
+    {
+      "handle": "AnthropicAI",
+      "team": "Anthropic"
+    },
+    {
+      "handle": "OpenAI",
+      "team": "OpenAI"
+    },
+    {
+      "handle": "xai",
+      "team": "xAI"
+    },
+    {
+      "handle": "cursor_ai",
+      "team": "Cursor"
+    },
+    {
+      "handle": "GoogleDeepMind",
+      "team": "Google DeepMind"
+    },
+    {
+      "handle": "sama",
+      "team": "OpenAI"
+    },
+    {
+      "handle": "karpathy",
+      "team": "Independent"
+    },
+    {
+      "handle": "lilianweng",
+      "team": "Independent"
+    },
+    {
+      "handle": "simonw",
+      "team": "Independent"
+    },
+    {
+      "handle": "shao__meng",
+      "team": "Independent"
+    },
+    {
+      "handle": "0xwhrrari",
+      "team": "Independent"
+    },
+    {
+      "handle": "0xCodez",
+      "team": "Independent"
+    },
+    {
+      "handle": "swyx",
+      "team": "Independent"
+    },
+    {
+      "handle": "DrJimFan",
+      "team": "Independent"
+    },
+    {
+      "handle": "hardmaru",
+      "team": "Independent"
+    },
+    {
+      "handle": "mattpocockuk",
+      "team": "Matt Pocock"
+    }
+  ],
+  "feeds": [
+    {
+      "url": "https://cursor.com/changelog/rss.xml",
+      "team": "Cursor",
+      "kind": "news"
+    },
+    {
+      "url": "https://deepmind.google/blog/rss.xml",
+      "team": "Google DeepMind",
+      "kind": "news"
+    },
+    {
+      "url": "https://blog.google/technology/ai/rss/",
+      "team": "Google",
+      "kind": "news"
+    },
+    {
+      "url": "https://engineering.fb.com/feed/",
+      "team": "Meta Engineering",
+      "kind": "news"
+    },
+    {
+      "url": "https://www.microsoft.com/en-us/research/feed/",
+      "team": "Microsoft Research",
+      "kind": "news"
+    },
+    {
+      "url": "https://huggingface.co/blog/feed.xml",
+      "team": "Hugging Face",
+      "kind": "news"
+    },
+    {
+      "url": "https://github.blog/feed/",
+      "team": "GitHub",
+      "kind": "news"
+    },
+    {
+      "url": "https://github.blog/engineering/feed/",
+      "team": "GitHub",
+      "kind": "news"
+    },
+    {
+      "url": "https://karpathy.github.io/feed.xml",
+      "team": "Andrej Karpathy",
+      "kind": "news"
+    },
+    {
+      "url": "https://lilianweng.github.io/index.xml",
+      "team": "Lilian Weng",
+      "kind": "news"
+    },
+    {
+      "url": "https://simonwillison.net/atom/everything/",
+      "team": "Simon Willison",
+      "kind": "news"
+    },
+    {
+      "url": "https://www.oneusefulthing.org/feed",
+      "team": "Ethan Mollick",
+      "kind": "news"
+    },
+    {
+      "url": "https://github.com/anthropics/claude-code/releases.atom",
+      "team": "Anthropic",
+      "kind": "release",
+      "author": "Anthropic",
+      "enrich": false
+    },
+    {
+      "url": "https://github.com/anthropics/anthropic-sdk-python/releases.atom",
+      "team": "Anthropic",
+      "kind": "release",
+      "author": "Anthropic",
+      "enrich": false
+    },
+    {
+      "url": "https://github.com/openai/codex/releases.atom",
+      "team": "OpenAI",
+      "kind": "release",
+      "author": "OpenAI",
+      "enrich": false
+    },
+    {
+      "url": "https://github.com/openai/openai-python/releases.atom",
+      "team": "OpenAI",
+      "kind": "release",
+      "author": "OpenAI",
+      "enrich": false
+    },
+    {
+      "url": "https://github.com/openai/openai-agents-python/releases.atom",
+      "team": "OpenAI",
+      "kind": "release",
+      "author": "OpenAI",
+      "enrich": false
+    },
+    {
+      "url": "https://github.blog/changelog/feed/",
+      "team": "GitHub",
+      "kind": "release"
+    },
+    {
+      "url": "https://forum.cursor.com/latest.rss",
+      "team": "Cursor",
+      "kind": "community"
+    },
+    {
+      "url": "https://community.openai.com/latest.rss",
+      "team": "OpenAI",
+      "kind": "community"
+    },
+    {
+      "url": "https://github.com/xai-org/grok-build/commits.atom",
+      "team": "xAI",
+      "kind": "commits",
+      "author": "xAI",
+      "enrich": false
+    },
+    {
+      "url": "https://github.com/cursor/cookbook/commits.atom",
+      "team": "Cursor",
+      "kind": "commits",
+      "author": "Cursor",
+      "enrich": false
+    },
+    {
+      "url": "https://www.aihero.dev/rss.xml",
+      "team": "Matt Pocock",
+      "kind": "news"
+    },
+    {
+      "url": "https://github.com/mattpocock/skills/releases.atom",
+      "team": "Matt Pocock",
+      "kind": "release",
+      "author": "Matt Pocock",
+      "enrich": false
+    }
+  ],
+  "selection": {
+    "maxArticlesPerRun": 1,
+    "maxItemsPerSource": 12,
+    "minSourceChars": 1200,
+    "priorityTeams": [
+      "Anthropic",
+      "OpenAI",
+      "xAI",
+      "Cursor",
+      "Google DeepMind"
+    ],
+    "kindOrder": [
+      "news",
+      "release",
+      "community",
+      "commits"
+    ],
+    "maxItemAgeDays": 21,
+    "tagStopWords": [
+      "AI",
+      "LLM"
+    ],
+    "enrichHeadlineFeeds": true,
+    "maxEnrichPerFeed": 5
+  }
+}
