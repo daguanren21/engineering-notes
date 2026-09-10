@@ -79,7 +79,7 @@ to mark the step the reader must not miss.
 
 ```flow
 title: 请求如何穿过三层
-caption: 实线是控制流
+caption: 上一层只对下一层负责
 
 layer: 控制层 | 目标与约束 | *拆分单元*
 layer: 编排层 | Worker A | Worker B | Gate

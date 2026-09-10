@@ -402,12 +402,12 @@ useHead({
   line-height: 1.4;
 }
 
-.prose :deep(p),
-.prose :deep(ul),
-.prose :deep(ol),
-.prose :deep(blockquote),
-.prose :deep(pre),
-.prose :deep(table) {
+.prose :deep(> p),
+.prose :deep(> ul),
+.prose :deep(> ol),
+.prose :deep(> blockquote),
+.prose :deep(> pre),
+.prose :deep(> table) {
   margin: 1.35em 0 0;
 }
 
@@ -415,12 +415,13 @@ useHead({
   text-wrap: pretty;
 }
 
-.prose :deep(ul),
-.prose :deep(ol) {
+.prose :deep(> ul),
+.prose :deep(> ol) {
   padding-left: 1.25em;
 }
 
-.prose :deep(li + li) {
+.prose :deep(> ul > li + li),
+.prose :deep(> ol > li + li) {
   margin-top: 0.4em;
 }
 

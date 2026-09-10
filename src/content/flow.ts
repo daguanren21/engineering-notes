@@ -9,7 +9,7 @@
  * Format, one band per line:
  *
  *   title: 请求如何穿过三层
- *   caption: 实线是控制流
+ *   caption: 上一层只对下一层负责
  *
  *   layer: 控制层 | 目标与约束 | *拆分单元*
  *   layer: 编排层 | Worker A | Worker B | Gate
@@ -90,6 +90,11 @@ export function parseFlowDiagram(source: string): FlowParseResult {
     }
 
     const boxes = parts.filter((part) => part !== "").map(stripWrapping);
+    const emptyBox = boxes.find((box) => box.label === "");
+    if (emptyBox) {
+      errors.push(`${where}: layer "${label}" has an empty box label`);
+      continue;
+    }
     if (boxes.length === 0) {
       errors.push(`${where}: layer "${label}" has no boxes`);
       continue;

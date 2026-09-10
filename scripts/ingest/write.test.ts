@@ -13,7 +13,7 @@ import matter from "gray-matter";
 import { ArticleFrontmatterSchema } from "../../src/content/schema.ts";
 import { slugify } from "../../src/content/slug.ts";
 import type { SourceItem } from "./types.ts";
-import { authorArticle, storeArticle } from "./write.ts";
+import { authorArticle, extractJson, storeArticle } from "./write.ts";
 
 const originalFetch = globalThis.fetch;
 const originalEnv = { ...process.env };
@@ -91,6 +91,38 @@ after(async () => {
   globalThis.fetch = originalFetch;
   process.env = { ...originalEnv };
   await rm(scratch, { recursive: true, force: true });
+});
+
+describe("extractJson", () => {
+  function titled(value: unknown): string {
+    if (value && typeof value === "object" && "title" in value && typeof value.title === "string") {
+      return value.title;
+    }
+    throw new Error("extracted value had no title");
+  }
+
+  it("reads a raw object and a fenced one", () => {
+    const raw = JSON.stringify(goodArticle);
+    assert.equal(titled(extractJson(raw)), goodArticle.title);
+
+    const fenced = "```json\n" + JSON.stringify(goodArticle, null, 2) + "\n```";
+    assert.equal(titled(extractJson(fenced)), goodArticle.title);
+  });
+
+  it("skips a leading brace that is not a JSON object", () => {
+    const wrapped = "note: {not json}\n" + JSON.stringify(goodArticle);
+    assert.equal(titled(extractJson(wrapped)), goodArticle.title);
+  });
+
+  it("still finds the object when a flow fence appears first", () => {
+    const nested =
+      "```flow\nlayer: A | one\nlayer: B | two\n```\n" + JSON.stringify(goodArticle);
+    assert.equal(titled(extractJson(nested)), goodArticle.title);
+  });
+
+  it("throws when the content has no JSON object", () => {
+    assert.throws(() => extractJson("note: {not json}"), /no JSON object/);
+  });
 });
 
 describe("authorArticle", () => {

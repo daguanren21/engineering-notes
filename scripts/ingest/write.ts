@@ -113,38 +113,52 @@ function sourcePayload(item: SourceItem): string {
 }
 
 /**
- * Scans for the matching close brace rather than trimming code fences first.
+ * Scans for a matching close brace rather than trimming code fences first.
  * Fence-stripping looks equivalent and is not: every article body contains a
  * ```flow block, so a fence regex hands back the diagram instead of the JSON.
- * The scan also ignores braces inside string values.
+ * The scan ignores braces inside string values, and skips a `{` that is not
+ * the start of a JSON object (a preamble like `note: {not json}`).
  */
-function extractJson(content: string): unknown {
-  const start = content.indexOf("{");
-  if (start === -1) throw new Error("response contained no JSON object");
+export function extractJson(content: string): unknown {
+  let searchFrom = 0;
 
-  let depth = 0;
-  let inString = false;
-  let escaped = false;
+  while (searchFrom < content.length) {
+    const start = content.indexOf("{", searchFrom);
+    if (start === -1) break;
 
-  for (let index = start; index < content.length; index += 1) {
-    const char = content[index];
+    let depth = 0;
+    let inString = false;
+    let escaped = false;
 
-    if (inString) {
-      if (escaped) escaped = false;
-      else if (char === "\\") escaped = true;
-      else if (char === '"') inString = false;
-      continue;
+    for (let index = start; index < content.length; index += 1) {
+      const char = content[index];
+
+      if (inString) {
+        if (escaped) escaped = false;
+        else if (char === "\\") escaped = true;
+        else if (char === '"') inString = false;
+        continue;
+      }
+
+      if (char === '"') inString = true;
+      else if (char === "{") depth += 1;
+      else if (char === "}") {
+        depth -= 1;
+        if (depth === 0) {
+          const candidate = content.slice(start, index + 1);
+          try {
+            return JSON.parse(candidate);
+          } catch {
+            break;
+          }
+        }
+      }
     }
 
-    if (char === '"') inString = true;
-    else if (char === "{") depth += 1;
-    else if (char === "}") {
-      depth -= 1;
-      if (depth === 0) return JSON.parse(content.slice(start, index + 1));
-    }
+    searchFrom = start + 1;
   }
 
-  throw new Error("response contained an unterminated JSON object");
+  throw new Error("response contained no JSON object");
 }
 
 async function requestArticle(

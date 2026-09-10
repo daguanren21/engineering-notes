@@ -23,12 +23,12 @@ const diagram = computed(() => parsed.value.diagram);
     </figcaption>
 
     <ol class="flow__layers">
-      <li v-for="(layer, index) in diagram.layers" :key="layer.label" class="flow__layer">
+      <li v-for="(layer, index) in diagram.layers" :key="index" class="flow__layer">
         <p class="flow__label">{{ layer.label }}</p>
         <ul class="flow__boxes">
           <li
-            v-for="box in layer.boxes"
-            :key="box.label"
+            v-for="(box, boxIndex) in layer.boxes"
+            :key="boxIndex"
             class="flow__box"
             :class="{ 'flow__box--accent': box.accent }"
           >

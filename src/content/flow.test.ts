@@ -13,7 +13,7 @@ describe("parseFlowDiagram", () => {
     const { diagram, errors } = parseFlowDiagram(
       [
         "title: 请求如何穿过三层",
-        "caption: 实线是控制流",
+        "caption: 上一层只对下一层负责",
         "",
         "layer: 控制层 | 目标与约束 | *拆分单元*",
         "layer: 编排层 | Worker A | Worker B | Gate",
@@ -22,7 +22,7 @@ describe("parseFlowDiagram", () => {
 
     assert.deepEqual(errors, []);
     assert.equal(diagram?.title, "请求如何穿过三层");
-    assert.equal(diagram?.caption, "实线是控制流");
+    assert.equal(diagram?.caption, "上一层只对下一层负责");
     assert.equal(diagram?.layers.length, 2);
     assert.deepEqual(diagram?.layers[0]?.boxes, [
       { label: "目标与约束", accent: false },
@@ -65,6 +65,13 @@ describe("parseFlowDiagram", () => {
     const { errors } = parseFlowDiagram("layer: 控制层\nlayer: B | two");
 
     assert.match(errors.join(" "), /has no boxes/);
+  });
+
+  it("rejects a box whose label is empty after stripping emphasis", () => {
+    const { diagram, errors } = parseFlowDiagram("layer: A | * *\nlayer: B | y");
+
+    assert.equal(diagram, null);
+    assert.match(errors.join(" "), /empty box label/);
   });
 
   it("rejects more layers or boxes than the layout can hold", () => {
