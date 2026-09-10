@@ -116,6 +116,31 @@ describe("authorArticle", () => {
     );
   });
 
+  it("falls back to the default model when the env var is an empty string", async () => {
+    // A workflow variable that is not configured arrives as "", and `??` does
+    // not fall back on "". This shipped as a bug once; every real run would
+    // have posted an empty model name.
+    const previous = { ...process.env };
+    process.env.DIGEST_API_KEY = "test-key";
+    process.env.DEEPSEEK_MODEL = "";
+
+    let sentModel: unknown;
+    globalThis.fetch = (async (_input: unknown, init?: RequestInit) => {
+      sentModel = (JSON.parse(String(init?.body)) as { model?: unknown }).model;
+      return new Response(
+        JSON.stringify({ choices: [{ message: { content: JSON.stringify(goodArticle) } }] }),
+        { status: 200, headers: { "content-type": "application/json" } },
+      );
+    }) as typeof fetch;
+
+    try {
+      await authorArticle(item, { stopWords: ["AI"] });
+      assert.equal(sentModel, "deepseek-chat");
+    } finally {
+      process.env = previous;
+    }
+  });
+
   it("retries a response that violates the output schema", async () => {
     const truncated = { ...goodArticle, body: "太短了。" };
     const stub = stubCompletion([truncated, goodArticle]);

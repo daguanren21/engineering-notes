@@ -13,7 +13,8 @@ const skillPath = fileURLToPath(new URL(".claude/skills/knowledge/SKILL.md", pro
 /** Overridable so tests can write into a scratch directory. */
 function articleDirectory(): string {
   return (
-    process.env.DIGEST_ARTICLE_DIR ?? fileURLToPath(new URL("src/pages/articles", projectRoot))
+    firstSet(process.env.DIGEST_ARTICLE_DIR) ??
+    fileURLToPath(new URL("src/pages/articles", projectRoot))
   );
 }
 
@@ -31,13 +32,28 @@ interface ChatCompletion {
 }
 
 /**
+ * First value that is actually set. `??` is not enough here: the workflow
+ * passes `DEEPSEEK_MODEL: ${{ vars.DEEPSEEK_MODEL }}`, which expands to an
+ * empty string when the variable is unconfigured, and `??` only falls back on
+ * null or undefined — so the model name would arrive empty and every request
+ * would be rejected.
+ */
+function firstSet(...values: (string | undefined)[]): string | undefined {
+  for (const value of values) {
+    const trimmed = value?.trim();
+    if (trimmed) return trimmed;
+  }
+  return undefined;
+}
+
+/**
  * DeepSeek is the default and the only provider this project assumes. The
  * overrides exist so an OpenAI-compatible endpoint can be swapped in without
  * touching code — DeepSeek, xAI, and OpenAI all speak the same wire format,
  * with one difference: newer OpenAI models reject `max_tokens`.
  */
 function provider(): { apiKey: string; baseUrl: string; model: string } {
-  const apiKey = (process.env.DIGEST_API_KEY ?? process.env.DEEPSEEK_API_KEY)?.trim();
+  const apiKey = firstSet(process.env.DIGEST_API_KEY, process.env.DEEPSEEK_API_KEY);
   if (!apiKey) {
     throw new Error("no API key: set DEEPSEEK_API_KEY (or DIGEST_API_KEY) before running");
   }
@@ -45,11 +61,10 @@ function provider(): { apiKey: string; baseUrl: string; model: string } {
   return {
     apiKey,
     baseUrl: (
-      process.env.DIGEST_BASE_URL ??
-      process.env.DEEPSEEK_BASE_URL ??
+      firstSet(process.env.DIGEST_BASE_URL, process.env.DEEPSEEK_BASE_URL) ??
       "https://api.deepseek.com"
     ).replace(/\/+$/, ""),
-    model: (process.env.DIGEST_MODEL ?? process.env.DEEPSEEK_MODEL ?? "deepseek-chat").trim(),
+    model: firstSet(process.env.DIGEST_MODEL, process.env.DEEPSEEK_MODEL) ?? "deepseek-chat",
   };
 }
 

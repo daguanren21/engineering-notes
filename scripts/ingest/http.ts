@@ -18,7 +18,9 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-const maxConcurrent = Math.max(1, Number(process.env.DIGEST_MAX_CONCURRENCY ?? 6));
+// `||`, not `??`: an unset workflow variable arrives as an empty string, and
+// Number("") is 0, which would serialise every request.
+const maxConcurrent = Math.max(1, Number(process.env.DIGEST_MAX_CONCURRENCY) || 6);
 let inFlight = 0;
 const waiting: (() => void)[] = [];
 
