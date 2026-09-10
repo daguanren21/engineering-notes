@@ -44,6 +44,9 @@ jobs:
       - name: Test digest authoring
         run: pnpm test:ingest
 
+      - name: Test the diagram format
+        run: pnpm test:content
+
       - name: Build site
         run: pnpm build
         env:

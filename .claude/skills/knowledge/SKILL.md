@@ -59,6 +59,50 @@ carry the mechanism. Second person is avoided unless the source is a procedure.
 - Aim for 1200–2500 Chinese characters of body. Longer is fine if every
   paragraph earns it; shorter is fine if the source is thin.
 
+## Diagrams are required
+
+**Every article contains at least one ```flow block. Prose alone is not
+acceptable** — a reader should be able to understand the shape of the system
+from the diagram, then read the prose for the reasoning. Text-only articles on
+this site have been rejected for being hard to follow.
+
+Place the first diagram in the first or second section, next to the paragraph
+that explains it. Never leave a diagram unmentioned in the prose: the sentence
+above it should say what the reader is looking at.
+
+A second diagram is worth adding when the article describes both a structure
+and a sequence, or a normal path and a failure path.
+
+The format is one band per line, rendered as a stacked architecture or flow
+diagram. `|` separates a band's name from its boxes; wrap a box in `*asterisks*`
+to mark the step the reader must not miss.
+
+```flow
+title: 请求如何穿过三层
+caption: 实线是控制流
+
+layer: 控制层 | 目标与约束 | *拆分单元*
+layer: 编排层 | Worker A | Worker B | Gate
+layer: 执行层 | 工具与权限 | 状态 | 隔离
+```
+
+Rules:
+
+- 2 to 6 `layer:` lines. Boxes in one line sit side by side; each line sits
+  above the next, with an arrow between them.
+- 1 to 5 boxes per layer. Multiple boxes express parallel work or a fork;
+  a single box expresses a stage.
+- Layer names and box labels are 1–40 characters. No `|` inside a label.
+- `title:` and `caption:` are optional. Use `caption` for the one sentence
+  that says how to read the diagram — describe the layers and the direction of
+  the flow. Do not refer to line styles or colours, which the format does not
+  have.
+- Only the three keywords `title:`, `caption:` and `layer:` are allowed.
+  Anything else fails validation and the article is rejected.
+- Do not use ASCII art, box-drawing characters, or a `text` fence for a
+  diagram. Those render as raw text and are exactly what this section exists
+  to prevent.
+
 ## Output contract
 
 Return **one JSON object and nothing else**. No prose before or after it, no
@@ -86,9 +130,9 @@ Field rules:
   Agent Team, OMP 源码, 结构化输出, 协作系统, 实验方法.
   Only coin a new tag when none of these fit, and then keep it under 10
   characters.
-- `body` — the article. Must contain 3–6 `##` headings. The heading text is
-  used to build the reading map, so each one must stand alone without its
-  section under it.
+- `body` — the article. Must contain 3–6 `##` headings, and at least one
+  ```flow diagram block. The heading text is used to build the reading map, so
+  each one must stand alone without its section under it.
 
 ## Reviewing an existing note
 

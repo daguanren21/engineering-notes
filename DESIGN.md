@@ -125,6 +125,28 @@ most recent note is reachable from the home hero without scrolling; every note
 is reachable from the archive, the tag index, or a related-notes list at the
 foot of any other note.
 
+## Diagrams
+
+Articles carry a diagram, not only prose. The format is a fenced `flow` block:
+one line per band, `|` separating the band name from its boxes, and `*asterisks*`
+marking the box the reader must not miss.
+
+```
+layer: 控制层 | 目标与约束 | *拆分单元*
+layer: 编排层 | Worker A | Worker B | Gate
+```
+
+`FlowDiagram.vue` renders it to plain markup during the SSG pass, so a diagram is
+present with JavaScript disabled and cannot flash in after hydration. It is drawn
+from the same tokens as the page: hairline bands, square boxes, mono band labels,
+and the accent reserved for the one marked box via a 3px top rule — never a side
+stripe.
+
+Diagrams sit in the flow of the prose, next to the paragraph that explains them,
+and the sentence above one should say what it shows. Never use ASCII art,
+box-drawing characters, or a `text` fence in their place; those render as raw text
+and are the thing this format exists to replace.
+
 ## Anti-patterns this world refuses
 
 Recorded so they are not reintroduced:

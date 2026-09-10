@@ -31,6 +31,12 @@ const item: SourceItem = {
 };
 
 const goodBody = [
+  "```flow",
+  "title: 循环放在哪一层",
+  "layer: 调用方 | 重放整个任务",
+  "layer: Harness | *记录中断点* | 从断点续跑",
+  "```",
+  "",
   "## 循环的所有权决定恢复策略",
   "",
   "把循环放在 Harness 里，中断点才有地方可记。放在调用方，恢复就只能靠重放，",
@@ -97,6 +103,21 @@ describe("authorArticle", () => {
     assert.equal(stub.calls, 1);
   });
 
+  it("parses a response whose body contains braces and a fence", async () => {
+    // The body carries a ```flow block and a code sample with braces, both of
+    // which broke the previous fence-stripping approach.
+    const withBraces = {
+      ...goodArticle,
+      body: `${goodArticle.body}\n\n\`\`\`ts\nconst config = { retries: 3 };\n\`\`\`\n`,
+    };
+    stubCompletion([withBraces]);
+
+    const result = await authorArticle(item, { stopWords: ["AI"] });
+
+    assert.equal(result.attempts, 1);
+    assert.match(result.article.body, /retries: 3/);
+  });
+
   it("retries once when the first response breaks the contract", async () => {
     const broken = { ...goodArticle, titleParts: ["拼不回去的", "标题"] };
     const stub = stubCompletion([broken, goodArticle]);
@@ -139,6 +160,34 @@ describe("authorArticle", () => {
     } finally {
       process.env = previous;
     }
+  });
+
+  it("rejects an article with no diagram", async () => {
+    const textOnly = {
+      ...goodArticle,
+      body: goodArticle.body.replace(/```flow[\s\S]*?```\n\n/, ""),
+    };
+    stubCompletion([textOnly, textOnly]);
+
+    await assert.rejects(
+      () => authorArticle(item, { stopWords: ["AI"] }),
+      /至少要有 1 个 ```flow 图/,
+    );
+  });
+
+  it("rejects a malformed diagram and asks for a repair", async () => {
+    const broken = {
+      ...goodArticle,
+      body: goodArticle.body.replace(
+        "layer: Harness | *记录中断点* | 从断点续跑",
+        "架构层：记录中断点",
+      ),
+    };
+    const stub = stubCompletion([broken, goodArticle]);
+    const result = await authorArticle(item, { stopWords: ["AI"] });
+
+    assert.equal(result.attempts, 2);
+    assert.equal(stub.calls, 2);
   });
 
   it("retries a response that violates the output schema", async () => {

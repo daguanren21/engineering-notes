@@ -191,6 +191,9 @@ export default defineConfig({
           if (html.includes("<GraphLoopHarnessDiagram />")) {
             imports.push('import GraphLoopHarnessDiagram from "../../components/article/GraphLoopHarnessDiagram.vue";');
           }
+          if (html.includes("<FlowDiagram")) {
+            imports.push('import FlowDiagram from "../../components/article/FlowDiagram.vue";');
+          }
           const script = imports.length
             ? `<script setup lang="ts">\n${imports.join("\n")}\n</script>`
             : "";
@@ -207,14 +210,27 @@ export default defineConfig({
         const renderFence = markdown.renderer.rules.fence!;
         markdown.renderer.rules.fence = (tokens, index, options, env, self) => {
           const token = tokens[index];
+          const info = token.info.trim();
+
+          // Generated articles carry their diagram in the fence body, so it has
+          // to reach the component as data rather than as a marker.
+          if (info === "flow") {
+            const source = JSON.stringify(token.content)
+              .replaceAll("&", "&amp;")
+              .replaceAll('"', "&quot;")
+              .replaceAll("<", "&lt;")
+              .replaceAll(">", "&gt;");
+            return `<FlowDiagram :source="${source}" />\n`;
+          }
+
           if (token.content === "") {
-            if (token.info === "demo context-handoff") {
+            if (info === "demo context-handoff") {
               return "<ContextHandoffDemo />\n";
             }
-            if (token.info === "demo prompt-cache") {
+            if (info === "demo prompt-cache") {
               return "<PromptCacheDemo />\n";
             }
-            if (token.info === "diagram graph-loop-harness") {
+            if (info === "diagram graph-loop-harness") {
               return "<GraphLoopHarnessDiagram />\n";
             }
           }

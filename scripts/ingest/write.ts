@@ -3,6 +3,7 @@ import { fileURLToPath } from "node:url";
 import matter from "gray-matter";
 import { z } from "zod";
 import { ArticleFrontmatterSchema } from "../../src/content/schema.ts";
+import { extractFlowBlocks, parseFlowDiagram } from "../../src/content/flow.ts";
 import { slugify } from "../../src/content/slug.ts";
 import { postJson } from "./http.ts";
 import type { AuthoredArticle, SourceItem } from "./types.ts";
@@ -111,13 +112,39 @@ function sourcePayload(item: SourceItem): string {
   ].join("\n");
 }
 
+/**
+ * Scans for the matching close brace rather than trimming code fences first.
+ * Fence-stripping looks equivalent and is not: every article body contains a
+ * ```flow block, so a fence regex hands back the diagram instead of the JSON.
+ * The scan also ignores braces inside string values.
+ */
 function extractJson(content: string): unknown {
-  const fenced = /```(?:json)?\s*([\s\S]*?)```/.exec(content);
-  const candidate = (fenced?.[1] ?? content).trim();
-  const start = candidate.indexOf("{");
-  const end = candidate.lastIndexOf("}");
-  if (start === -1 || end === -1) throw new Error("response contained no JSON object");
-  return JSON.parse(candidate.slice(start, end + 1));
+  const start = content.indexOf("{");
+  if (start === -1) throw new Error("response contained no JSON object");
+
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+
+  for (let index = start; index < content.length; index += 1) {
+    const char = content[index];
+
+    if (inString) {
+      if (escaped) escaped = false;
+      else if (char === "\\") escaped = true;
+      else if (char === '"') inString = false;
+      continue;
+    }
+
+    if (char === '"') inString = true;
+    else if (char === "{") depth += 1;
+    else if (char === "}") {
+      depth -= 1;
+      if (depth === 0) return JSON.parse(content.slice(start, index + 1));
+    }
+  }
+
+  throw new Error("response contained an unterminated JSON object");
 }
 
 async function requestArticle(
@@ -189,6 +216,19 @@ function reviewArticle(article: AuthoredArticle, stopWords: readonly string[]): 
 
   if (/[！!]{1}/.test(article.body) || /[\u{1f300}-\u{1faff}\u{2600}-\u{27bf}]/u.test(article.body)) {
     problems.push("正文不能出现感叹号或 emoji。");
+  }
+
+  const diagrams = extractFlowBlocks(article.body);
+  if (diagrams.length === 0) {
+    problems.push(
+      "正文至少要有 1 个 ```flow 图。纯文字读起来很晦涩，必须用架构图或流程图配合说明。",
+    );
+  }
+  for (const [index, source] of diagrams.entries()) {
+    const { errors } = parseFlowDiagram(source);
+    if (errors.length > 0) {
+      problems.push(`第 ${index + 1} 个 flow 图不合法：\n${errors.join("\n")}`);
+    }
   }
 
   return problems.length > 0 ? problems.join("\n") : null;

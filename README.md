@@ -192,6 +192,33 @@ DEEPSEEK_API_KEY=sk-... node scripts/ingest/run.ts --limit=3 --draft
 `feeds` 里的每个地址都实际探测过，能返回 feed 的才保留。加新来源前请先
 用 `curl` 确认它真的返回 RSS 或 Atom。
 
+### 配图
+
+每篇文章必须带至少一个 ```flow 图。纯文字的解读读起来很晦涩，规范里这一条是
+硬性的：没有图，或者图不合法，文章会被打回重写（第一次会自动带错误信息重试
+一次，第二次仍不通过就整篇放弃）。
+
+格式是每行一个层，`|` 分隔层名和该层的方框，方框用 `*星号*` 包起来表示需要
+重点注意的那一个：
+
+````
+```flow
+title: 请求如何穿过三层
+caption: 控制层只对编排层负责
+
+layer: 控制层 | 目标与约束 | *拆分单元*
+layer: 编排层 | Worker A | Worker B | Gate
+layer: 执行层 | 工具与权限 | 状态 | 隔离
+```
+````
+
+约束：2–6 层，每层 1–5 个方框，标签 1–40 字，只认 `title:`、`caption:`、
+`layer:` 三个关键字。解析器在 `src/content/flow.ts`，浏览器、SSG 和流水线
+共用同一份——所以校验和渲染不会出现理解不一致。
+
+`FlowDiagram.vue` 在 SSG 阶段就渲染成静态 HTML，图不依赖 JavaScript，也不会
+出现水合后才闪出来的情况。
+
 ### 写作规范
 
 `.claude/skills/knowledge/SKILL.md` 的正文会被 `scripts/ingest/run.ts` 原文
