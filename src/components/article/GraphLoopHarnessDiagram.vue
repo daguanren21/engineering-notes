@@ -225,7 +225,7 @@
 .architecture__card--splitter,
 .architecture__card--gate {
   border-color: var(--accent);
-  box-shadow: inset 4px 0 0 var(--accent);
+  border-top-width: 3px;
 }
 
 .architecture__card--result {
