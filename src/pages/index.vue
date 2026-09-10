@@ -17,11 +17,11 @@ if (!latestArticle) {
 }
 
 useHead({
-  title: "工程手记 · 复杂系统的阅读、拆解与判断",
+  title: "工程手记",
   meta: [
     {
       name: "description",
-      content: "记录经得起复用的工程判断：还原问题、辨认边界、保留证据。",
+      content: "一期一判断。把长文和源码整理成若干个月后仍然能用的工程结论。",
     },
     { property: "og:type", content: "website" },
   ],
@@ -30,5 +30,5 @@ useHead({
 
 <template>
   <HomeHero :article="latestArticle" />
-  <ArticleArchive :articles="publishedArticles" />
+  <ArticleArchive :articles="publishedArticles.slice(1)" />
 </template>

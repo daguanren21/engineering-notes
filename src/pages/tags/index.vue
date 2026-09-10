@@ -7,11 +7,11 @@ import { tagIndex } from "../../content/tags";
 const publishedCount = articles.filter((article) => !article.draft).length;
 
 useHead({
-  title: "标签 · 工程手记",
+  title: "索引 · 工程手记",
   meta: [
     {
       name: "description",
-      content: "按主题浏览全部工程笔记：Harness、Agent 运行时、上下文工程与工程组织。",
+      content: "按主题检索全部期次：Harness、Agent 运行时、上下文工程与工程组织。",
     },
     { property: "og:type", content: "website" },
   ],
@@ -19,53 +19,49 @@ useHead({
 </script>
 
 <template>
-  <section class="tag-page" aria-labelledby="tags-title">
-    <header class="tag-page__header">
-      <h1 id="tags-title">按主题找，比按时间翻更快。</h1>
-      <p>
-        {{ tagIndex.length }} 个标签 · {{ publishedCount }} 篇笔记
-      </p>
+  <section class="index-page" aria-labelledby="tags-title">
+    <header class="index-page__header">
+      <h1 id="tags-title">主题索引</h1>
+      <p>{{ tagIndex.length }} 个主题 · {{ publishedCount }} 期</p>
     </header>
-
     <TagDirectory />
   </section>
 </template>
 
 <style scoped>
-.tag-page {
-  padding-block: clamp(48px, 6vw, 84px) clamp(76px, 9vw, 126px);
+.index-page {
+  padding-block: 48px 96px;
 }
 
-.tag-page__header {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 32px;
-  align-items: end;
-  padding-bottom: 34px;
+.index-page__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--line);
 }
 
-.tag-page__header h1 {
-  max-width: 720px;
+.index-page__header h1 {
   margin: 0;
-  font-family: var(--font-serif);
-  font-size: clamp(2rem, 4vw, 4rem);
-  font-weight: 560;
-  letter-spacing: -0.045em;
-  line-height: 1.15;
-  text-wrap: balance;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
 }
 
-.tag-page__header > p {
+.index-page__header > p {
   color: var(--muted);
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  white-space: nowrap;
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
 }
 
 @media (max-width: 760px) {
-  .tag-page__header {
-    grid-template-columns: 1fr;
-    gap: 18px;
+  .index-page__header {
+    flex-direction: column;
+    gap: 10px;
   }
 }
 </style>

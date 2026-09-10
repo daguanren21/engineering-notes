@@ -11,19 +11,9 @@ defineProps<{
   <ol class="notes">
     <li v-for="article in articles" :key="article.slug">
       <RouterLink class="note" :to="article.href">
-        <span class="note__issue">N° {{ String(article.issue).padStart(2, "0") }}</span>
-        <span class="note__body">
-          <strong>{{ article.title }}</strong>
-          <span class="note__description">{{ article.description }}</span>
-        </span>
-        <span class="note__meta">
-          <time :datetime="article.publishedAt">{{ formatDate(article.publishedAt) }}</time>
-          <span>{{ article.readingMinutes }} 分钟</span>
-        </span>
-        <span class="note__action">
-          阅读
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" /></svg>
-        </span>
+        <span class="note__issue">{{ String(article.issue).padStart(2, "0") }}</span>
+        <strong>{{ article.title }}</strong>
+        <time :datetime="article.publishedAt">{{ formatDate(article.publishedAt) }}</time>
       </RouterLink>
     </li>
   </ol>
@@ -33,124 +23,66 @@ defineProps<{
 .notes {
   margin: 0;
   padding: 0;
-  border-top: 1px solid var(--line-strong);
   list-style: none;
-}
-
-.notes li {
-  border-bottom: 1px solid var(--line);
 }
 
 .note {
   display: grid;
-  grid-template-columns: 92px minmax(0, 1fr) 140px 76px;
-  gap: clamp(20px, 3vw, 44px);
-  align-items: start;
-  padding-block: 28px;
+  grid-template-columns: 3.4rem minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: baseline;
+  min-height: 56px;
+  padding-block: 14px;
+  border-top: 1px solid var(--line);
   color: var(--ink);
   text-decoration: none;
 }
 
-.note__issue,
-.note__meta,
-.note__action {
-  font-family: var(--font-mono);
-  font-size: 0.69rem;
+.notes li:last-child .note {
+  border-bottom: 1px solid var(--line);
 }
 
-.note__issue,
-.note__meta {
-  color: var(--muted);
-}
-
-.note__body {
-  display: grid;
-  gap: 8px;
+.note__issue {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
 }
 
 .note strong {
+  min-width: 0;
   font-family: var(--font-serif);
-  font-size: clamp(1.3rem, 2.1vw, 1.9rem);
-  font-weight: 620;
-  letter-spacing: -0.02em;
-  line-height: 1.28;
-  text-wrap: balance;
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.4;
 }
 
-.note__description {
-  max-width: 680px;
+.note time {
   color: var(--muted);
-  font-size: 0.88rem;
-  line-height: 1.7;
-  text-wrap: pretty;
-}
-
-.note__meta {
-  display: grid;
-  gap: 8px;
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   white-space: nowrap;
 }
 
-.note__action {
-  display: inline-flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 6px;
+.note:hover,
+.note:focus-visible {
   color: var(--accent);
-  font-weight: 700;
 }
 
-.note__action svg {
-  width: 18px;
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.6;
-  transition: transform 180ms ease;
+.note:hover time,
+.note:focus-visible time {
+  color: var(--accent);
 }
 
-.note:hover .note__action svg,
-.note:focus-visible .note__action svg {
-  transform: translateX(4px);
-}
-
-@media (max-width: 760px) {
+@media (max-width: 720px) {
   .note {
-    grid-template-columns: 58px minmax(0, 1fr) auto;
-    gap: 14px;
-    padding-block: 24px;
+    grid-template-columns: 2.6rem minmax(0, 1fr);
   }
 
-  .note__meta {
+  .note time {
     grid-column: 2;
-    grid-row: 2;
-    grid-auto-flow: column;
-    justify-content: start;
-  }
-
-  .note__action {
-    grid-column: 3;
-    grid-row: 1;
-  }
-}
-
-@media (max-width: 480px) {
-  .note {
-    grid-template-columns: 46px minmax(0, 1fr);
-  }
-
-  .note__action {
-    grid-column: 2;
-    grid-row: 3;
-    justify-content: flex-start;
-    min-height: 44px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .note__action svg {
-    transition: none;
   }
 }
 </style>

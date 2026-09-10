@@ -36,8 +36,10 @@ onMounted(() => {
 }
 
 .redirect__title {
-  font-family: var(--font-serif);
+  font-family: var(--font-display);
   font-size: clamp(2.6rem, 7vw, 5.4rem);
+  font-weight: 700;
+  letter-spacing: -0.045em;
   line-height: 0.96;
 }
 

@@ -8,8 +8,8 @@ useHead({ htmlAttrs: { lang: "zh-CN" } });
 
 <template>
   <a class="skip-link" href="#main-content">跳到正文</a>
+  <SiteHeader />
   <div class="site-shell">
-    <SiteHeader />
     <main id="main-content">
       <RouterView />
     </main>
