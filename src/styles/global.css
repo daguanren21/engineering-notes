@@ -39,10 +39,10 @@
     --surface: #faf8f1;
     --ink: #14211b;
     --ink-soft: #293a32;
-    --muted: #58675f;
+    --muted: #525f58;
     --line: #cbc8bc;
-    --line-strong: #8e948d;
-    --accent: #c74320;
+    --line-strong: #7f867f;
+    --accent: #b0351a;
     --accent-soft: #d7a28f;
     --accent-wash: #eadbd0;
     --code: #111916;
@@ -85,11 +85,13 @@
   body {
     min-width: 320px;
     min-height: 100vh;
-    background-image:
-      linear-gradient(to right, transparent calc(100% - 1px), color-mix(in srgb, var(--line) 30%, transparent) 1px),
-      linear-gradient(to bottom, transparent calc(100% - 1px), color-mix(in srgb, var(--line) 22%, transparent) 1px);
+    background-image: linear-gradient(
+      to right,
+      transparent calc(100% - 1px),
+      color-mix(in srgb, var(--line) 38%, transparent) 1px
+    );
     background-position: center top;
-    background-size: min(10vw, 124px) 100%, 100% 28px;
+    background-size: min(10vw, 124px) 100%;
   }
 
   body::before {
@@ -109,8 +111,15 @@
     background: var(--selection);
   }
 
+  :root {
+    accent-color: var(--accent);
+    caret-color: var(--accent);
+    scrollbar-color: var(--line-strong) transparent;
+  }
+
   a {
     color: inherit;
+    text-underline-offset: 0.18em;
   }
 
   a:focus-visible,
@@ -140,23 +149,13 @@
     transform: translateY(0);
   }
 
-  .eyebrow {
-    color: var(--accent);
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    line-height: 1.4;
-    text-transform: uppercase;
-  }
-
   @media (max-width: 760px) {
     :root {
       --page: calc(100vw - 32px);
     }
 
     body {
-      background-size: 25vw 100%, 100% 28px;
+      background-size: 25vw 100%;
     }
 
     body::before {

@@ -10,7 +10,6 @@ defineProps<{
 <template>
   <section class="hero" aria-labelledby="home-title">
     <div class="hero__copy">
-      <p class="eyebrow">ENGINEERING NOTES / 工程阅读档案</p>
       <h1 id="home-title">
         <span class="hero__line">复杂系统，</span>
         <span class="hero__line hero__line--accent">值得写清楚。</span>
@@ -64,7 +63,7 @@ defineProps<{
 
 .hero h1 {
   max-width: 780px;
-  margin: 26px 0 0;
+  margin: 0;
   font-family: var(--font-serif);
   font-size: clamp(3.7rem, 5.5vw, 5rem);
   font-weight: 560;
@@ -74,7 +73,7 @@ defineProps<{
 
 .hero__line {
   display: block;
-  white-space: nowrap;
+  text-wrap: balance;
 }
 
 .hero__line--accent {
@@ -185,7 +184,7 @@ defineProps<{
 
 .featured h2 span {
   display: block;
-  white-space: nowrap;
+  text-wrap: balance;
 }
 
 .featured__description {

@@ -20,7 +20,6 @@ onMounted(() => {
 
 <template>
   <section class="redirect" aria-labelledby="redirect-title">
-    <p class="eyebrow">ARTICLE MOVED</p>
     <h1 id="redirect-title" class="redirect__title">文章已合并</h1>
     <p class="redirect__copy">
       子代理上下文分析现已并入《OMP 源码分析：子代理、Token 缓存与结构化输出》。
@@ -37,7 +36,6 @@ onMounted(() => {
 }
 
 .redirect__title {
-  margin-top: 12px;
   font-family: var(--font-serif);
   font-size: clamp(2.6rem, 7vw, 5.4rem);
   line-height: 0.96;

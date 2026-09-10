@@ -695,7 +695,7 @@ onBeforeUnmount(() => {
   gap: 14px;
   margin-top: 20px;
   padding: 11px 13px;
-  border-left: 3px solid var(--accent);
+  border-top: 3px solid var(--accent);
   background: var(--accent-wash);
 }
 

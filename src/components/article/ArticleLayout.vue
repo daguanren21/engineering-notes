@@ -1,12 +1,23 @@
 <script setup lang="ts">
 import { useHead } from "@unhead/vue";
 import { computed } from "vue";
+import { articlesSharingTags, tagSlug } from "../../content/tags";
+import { useReadingProgress } from "../../composables/useReadingProgress";
 import type { ArticleFrontmatter } from "../../content/schema";
 import { formatDate } from "../../content/articles";
+import NoteList from "../tags/NoteList.vue";
 
-const props = defineProps<ArticleFrontmatter>();
+const props = withDefaults(
+  defineProps<ArticleFrontmatter & { slug?: string }>(),
+  { slug: "" },
+);
 const issueLabel = computed(() => String(props.issue).padStart(2, "0"));
 const isSourceStudy = computed(() => props.sourceKind === "source-code");
+
+const progress = useReadingProgress();
+const progressStyle = computed(() => ({ transform: `scaleX(${progress.value})` }));
+
+const related = computed(() => articlesSharingTags({ slug: props.slug, tags: props.tags }));
 
 useHead({
   title: computed(() => `${props.title} · 工程手记`),
@@ -15,12 +26,15 @@ useHead({
     { property: "og:type", content: "article" },
     { property: "og:title", content: props.title },
     { property: "og:description", content: props.description },
+    { property: "article:published_time", content: props.publishedAt },
   ],
 });
 </script>
 
 <template>
   <article class="article">
+    <div class="reading-progress" aria-hidden="true"><span :style="progressStyle" /></div>
+
     <header class="article-hero">
       <div class="article-hero__rail">
         <RouterLink class="back-link" to="/#archive">
@@ -31,13 +45,21 @@ useHead({
       </div>
 
       <div class="article-hero__main">
-        <p class="eyebrow">{{ isSourceStudy ? "SOURCE STUDY" : "READING NOTE" }} / {{ tags[0] }}</p>
         <h1><span v-for="part in titleParts" :key="part">{{ part }}</span></h1>
         <p class="article-hero__description">{{ description }}</p>
+        <ul class="article-hero__tags" aria-label="标签">
+          <li v-for="tag in tags" :key="tag">
+            <RouterLink :to="`/tags/${tagSlug(tag)}`">{{ tag }}</RouterLink>
+          </li>
+        </ul>
       </div>
 
       <aside class="article-summary" aria-label="文章信息">
         <dl>
+          <div>
+            <dt>体例</dt>
+            <dd>{{ isSourceStudy ? "源码对照" : "阅读笔记" }}</dd>
+          </div>
           <div>
             <dt>发布</dt>
             <dd><time :datetime="publishedAt">{{ formatDate(publishedAt) }}</time></dd>
@@ -66,8 +88,8 @@ useHead({
     <div class="article-body">
       <nav class="contents" aria-label="文章目录">
         <div class="contents__heading">
-          <span>READING MAP</span>
-          <span>{{ sections.length }} SECTIONS</span>
+          <span>阅读地图</span>
+          <span>{{ sections.length }} 节</span>
         </div>
         <ol>
           <li v-for="(section, index) in sections" :key="section.id">
@@ -96,6 +118,14 @@ useHead({
         </footer>
       </div>
     </div>
+
+    <section v-if="related.length" class="related" aria-labelledby="related-title">
+      <div class="related__heading">
+        <h2 id="related-title">同一主题的其它笔记</h2>
+        <RouterLink to="/tags">按标签浏览</RouterLink>
+      </div>
+      <NoteList :articles="related" />
+    </section>
   </article>
 </template>
 
@@ -104,12 +134,31 @@ useHead({
   padding-bottom: clamp(86px, 10vw, 150px);
 }
 
+.reading-progress {
+  position: fixed;
+  z-index: 40;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  pointer-events: none;
+}
+
+.reading-progress span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+
 .article-hero {
   display: grid;
   grid-template-columns: 150px minmax(0, 1fr) minmax(230px, 0.34fr);
   column-gap: clamp(32px, 5vw, 76px);
   row-gap: clamp(34px, 4vw, 54px);
-  padding-block: clamp(54px, 7vw, 96px) clamp(64px, 8vw, 108px);
+  padding-block: clamp(44px, 6vw, 80px) clamp(64px, 8vw, 108px);
   border-bottom: 1px solid var(--line-strong);
 }
 
@@ -131,6 +180,12 @@ useHead({
   align-self: flex-start;
   gap: 7px;
   color: var(--muted);
+  text-decoration: none;
+}
+
+.back-link:hover,
+.back-link:focus-visible {
+  color: var(--accent);
 }
 
 .back-link svg {
@@ -148,7 +203,7 @@ useHead({
 
 .article-hero__main h1 {
   max-width: 900px;
-  margin: 21px 0 0;
+  margin: 0;
   font-family: var(--font-serif);
   font-size: clamp(3.25rem, 5vw, 5rem);
   font-weight: 620;
@@ -159,7 +214,7 @@ useHead({
 
 .article-hero__main h1 span {
   display: block;
-  white-space: nowrap;
+  text-wrap: balance;
 }
 
 .article-hero__main h1 span:last-child {
@@ -175,6 +230,35 @@ useHead({
   font-family: var(--font-serif);
   font-size: clamp(1.08rem, 1.6vw, 1.32rem);
   line-height: 1.75;
+  text-wrap: pretty;
+}
+
+.article-hero__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 26px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.article-hero__tags a {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  padding-inline: 12px;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.69rem;
+  text-decoration: none;
+  transition: color 160ms ease, border-color 160ms ease;
+}
+
+.article-hero__tags a:hover,
+.article-hero__tags a:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .article-summary {
@@ -189,7 +273,7 @@ useHead({
 
 .article-summary dl {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 20px;
   margin: 0;
 }
@@ -219,6 +303,7 @@ useHead({
 .article-summary > p {
   margin-top: 0;
   color: var(--muted);
+  text-wrap: pretty;
 }
 
 .article-summary a {
@@ -270,7 +355,8 @@ useHead({
   text-decoration: none;
 }
 
-.contents a:hover {
+.contents a:hover,
+.contents a:focus-visible {
   color: var(--accent);
 }
 
@@ -310,16 +396,6 @@ useHead({
   line-height: 1.3;
 }
 
-.prose :deep(h2::before) {
-  display: block;
-  margin-bottom: 10px;
-  color: var(--accent);
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.1em;
-  content: "SECTION";
-}
-
 .prose :deep(h3) {
   margin: 2.8rem 0 0;
   font-size: 1.22rem;
@@ -333,6 +409,10 @@ useHead({
 .prose :deep(pre),
 .prose :deep(table) {
   margin: 1.35em 0 0;
+}
+
+.prose :deep(p) {
+  text-wrap: pretty;
 }
 
 .prose :deep(ul),
@@ -356,11 +436,18 @@ useHead({
 }
 
 .prose :deep(blockquote) {
-  padding: 1.35rem 1.5rem;
-  border-left: 4px solid var(--accent);
+  position: relative;
+  margin-block: 2.6rem;
+  padding: 1.5rem 0;
+  border-block: 1px solid var(--line-strong);
   color: var(--ink);
-  background: var(--accent-wash);
-  font-size: 1.12em;
+  font-size: 1.14em;
+  line-height: 1.78;
+  text-wrap: pretty;
+}
+
+.prose :deep(blockquote > :first-child) {
+  margin-top: 0;
 }
 
 .prose :deep(:not(pre) > code) {
@@ -457,6 +544,37 @@ useHead({
   stroke-width: 1.6;
 }
 
+.related {
+  margin-top: clamp(72px, 9vw, 118px);
+  padding-top: clamp(40px, 5vw, 62px);
+  border-top: 1px solid var(--line-strong);
+}
+
+.related__heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 30px;
+}
+
+.related__heading h2 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(1.5rem, 2.6vw, 2.2rem);
+  font-weight: 560;
+  letter-spacing: -0.035em;
+  line-height: 1.2;
+}
+
+.related__heading a {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.69rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
 @media (max-width: 1040px) {
   .article-hero {
     grid-template-columns: 110px minmax(0, 1fr);
@@ -501,7 +619,8 @@ useHead({
   }
 
   .article-summary dl {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px 20px;
   }
 
   .article-summary dl div {
@@ -537,6 +656,12 @@ useHead({
     grid-template-columns: repeat(2, minmax(0, 1fr));
     column-gap: 16px;
   }
+
+  .related__heading {
+    flex-direction: column;
+    gap: 10px;
+    padding-bottom: 22px;
+  }
 }
 
 @media (max-width: 500px) {
@@ -552,6 +677,12 @@ useHead({
   .article-end > div {
     align-items: flex-start;
     flex-direction: column;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .article-hero__tags a {
+    transition: none;
   }
 }
 </style>

@@ -1,3 +1,16 @@
 node_modules/
 dist/
 .DS_Store
+
+# `npx impeccable install` writes ~2 MB of vendored skill per harness into these
+# paths. That is a per-machine install, reproducible with one command, so it is
+# not committed. `.claude/skills/knowledge/` is the exception: it is this repo's
+# own writing contract and the digest pipeline reads it in CI.
+.grok/
+.cursor/
+.codex/
+.agents/
+.claude/*
+!.claude/skills/
+.claude/skills/*
+!.claude/skills/knowledge/

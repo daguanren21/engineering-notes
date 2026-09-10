@@ -139,7 +139,7 @@ function blockStatus(index: number): string {
 .cache-blocks span { font-family: var(--font-mono); font-size: .68rem; }
 .cache-demo .cache-blocks li[data-hit="true"] { border-color: var(--accent); background: var(--accent-wash); }
 .cache-blocks li[data-hit="true"] small { color: var(--accent); }
-.cache-demo .cache-explanation { margin: 20px 0; min-height: 3.3em; border-left: 3px solid var(--accent); padding-left: 12px; font-family: var(--font-sans); font-size: .87rem; line-height: 1.65; }
+.cache-demo .cache-explanation { margin: 20px 0; min-height: 3.3em; border-top: 3px solid var(--accent); padding-top: 12px; font-family: var(--font-sans); font-size: .87rem; line-height: 1.65; }
 .cache-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
 .cache-metrics > div { display: grid; min-width: 0; gap: 7px; padding: 12px; border: 1px solid var(--line); }
 .cache-metrics span { font-size: .73rem; color: var(--muted); }

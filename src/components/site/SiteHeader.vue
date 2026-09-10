@@ -2,6 +2,7 @@
 import { useRoute } from "vue-router";
 
 const route = useRoute();
+const feedUrl = `${import.meta.env.BASE_URL}rss.xml`;
 </script>
 
 <template>
@@ -19,10 +20,12 @@ const route = useRoute();
     <nav aria-label="主导航">
       <RouterLink to="/">最新</RouterLink>
       <RouterLink to="/#archive">归档</RouterLink>
+      <RouterLink to="/tags">标签</RouterLink>
+      <a :href="feedUrl" type="application/rss+xml">订阅</a>
     </nav>
 
     <span class="site-header__route" aria-hidden="true">
-      {{ route.path === "/" ? "INDEX / 01" : "NOTE / 01" }}
+      {{ route.path === "/" ? "INDEX" : "NOTE" }}
     </span>
   </header>
 </template>
