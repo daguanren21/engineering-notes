@@ -1,8 +1,10 @@
 {
   "seen": [
-    "https://cursor.com/changelog/self-hosted-machines"
+    "https://cursor.com/changelog/self-hosted-machines",
+    "https://deepmind.google/blog/introducing-weathernext-3-our-most-advanced-and-accurate-global-weather-ai-model/"
   ],
   "recentTeams": [
+    "Google DeepMind",
     "Cursor"
   ]
 }
