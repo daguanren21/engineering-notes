@@ -33,7 +33,7 @@ useHead({
 
 <template>
   <section class="index-page" aria-labelledby="tag-title">
-    <RouterLink class="index-page__back" to="/tags">全部主题</RouterLink>
+    <RouterLink class="index-page__back" to="/tags">← 全部主题</RouterLink>
 
     <template v-if="group">
       <header class="index-page__header">
@@ -68,9 +68,9 @@ useHead({
   min-height: 44px;
   align-items: center;
   color: var(--muted);
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: 0.78rem;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: 0.08em;
   text-decoration: none;
 }
@@ -92,17 +92,17 @@ useHead({
 .index-page__header h1,
 .index-page__empty h1 {
   margin: 0;
-  font-family: var(--font-display);
+  font-family: var(--font-serif);
   font-size: clamp(2rem, 5vw, 3.4rem);
-  font-weight: 700;
-  letter-spacing: -0.04em;
+  font-weight: 500;
+  letter-spacing: -0.03em;
 }
 
 .index-page__header > p {
   color: var(--muted);
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: 0.78rem;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: 0.08em;
 }
 
@@ -112,9 +112,9 @@ useHead({
 
 .index-page__others h2 {
   margin: 0 0 16px;
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: 0.78rem;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: 0.16em;
 }
 
@@ -132,7 +132,7 @@ useHead({
 
 .index-page__empty a {
   color: var(--accent);
-  font-weight: 700;
+  font-weight: 500;
 }
 
 @media (max-width: 760px) {

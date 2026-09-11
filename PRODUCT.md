@@ -37,8 +37,8 @@ organising principle.
 - Each note carries: issue number, publishing date, source title, source URL,
   source author, tags, and reading minutes.
 - The site is pre-rendered per route. New routes must be prerenderable.
-- Chinese and Latin text share the page. Serif for reading and display, mono
-  for metadata and figures, sans for interface and headings inside prose.
+- Chinese and Latin text share the page. Serif for reading and the issue
+  numeral, Inter for interface and in-article headings, mono for code.
 
 ## Voice
 

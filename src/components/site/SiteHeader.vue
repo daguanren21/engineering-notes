@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useRoute } from "vue-router";
-import { articles } from "../../content/articles";
+import { articles, formatDate } from "../../content/articles";
 
 const route = useRoute();
 const feedUrl = `${import.meta.env.BASE_URL}rss.xml`;
@@ -41,7 +41,7 @@ const onTags = computed(() => route.path.startsWith("/tags"));
         <strong>{{ issueLabel }}</strong>
         <span>期</span>
       </p>
-      <time :datetime="current.publishedAt">{{ current.publishedAt.replaceAll("-", ".") }}</time>
+      <time :datetime="current.publishedAt">{{ formatDate(current.publishedAt) }}</time>
     </div>
   </header>
 </template>
@@ -64,11 +64,11 @@ const onTags = computed(() => route.path.startsWith("/tags"));
 }
 
 .masthead__brand {
-  color: inherit;
-  font-family: var(--font-sans);
-  font-size: 1.05rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 1.12rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
   text-decoration: none;
 }
 
@@ -120,10 +120,11 @@ const onTags = computed(() => route.path.startsWith("/tags"));
 }
 
 .masthead__issue strong {
+  color: var(--ink);
   font-family: var(--font-display);
-  font-size: clamp(4.8rem, 11vw, 7.2rem);
-  font-weight: 600;
-  letter-spacing: -0.055em;
+  font-size: clamp(4.8rem, 11vw, 6rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
 }
 
 .masthead__issue time {

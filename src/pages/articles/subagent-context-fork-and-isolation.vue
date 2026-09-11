@@ -36,10 +36,10 @@ onMounted(() => {
 }
 
 .redirect__title {
-  font-family: var(--font-display);
+  font-family: var(--font-serif);
   font-size: clamp(2.6rem, 7vw, 5.4rem);
-  font-weight: 700;
-  letter-spacing: -0.045em;
+  font-weight: 500;
+  letter-spacing: -0.03em;
   line-height: 0.96;
 }
 
@@ -54,6 +54,6 @@ onMounted(() => {
   display: inline-block;
   margin-top: 24px;
   color: var(--accent);
-  font-weight: 700;
+  font-weight: 500;
 }
 </style>

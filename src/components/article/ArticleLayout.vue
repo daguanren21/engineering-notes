@@ -36,8 +36,7 @@ useHead({
     <div class="reading-progress" aria-hidden="true"><span :style="progressStyle" /></div>
 
     <header class="folio">
-      <RouterLink class="folio__back" to="/#archive">过刊</RouterLink>
-      <p class="folio__issue">第 {{ issueLabel }} 期</p>
+      <RouterLink class="folio__back" to="/#archive">← 过刊</RouterLink>
       <h1>
         <span v-for="part in titleParts" :key="part">{{ part }}</span>
       </h1>
@@ -128,7 +127,6 @@ useHead({
 }
 
 .folio__back,
-.folio__issue,
 .folio__meta,
 .folio__tags a,
 .contents__heading,
@@ -153,21 +151,13 @@ useHead({
   color: var(--accent);
 }
 
-.folio__issue {
-  margin: 8px 0 0;
-  color: var(--ink);
-  font-size: clamp(3.4rem, 10vw, 7rem);
-  letter-spacing: -0.06em;
-  line-height: 0.85;
-}
-
 .folio h1 {
   max-width: 18em;
-  margin: 18px 0 0;
-  font-family: var(--font-display);
+  margin: 8px 0 0;
+  font-family: var(--font-serif);
   font-size: clamp(2.4rem, 5.6vw, 4.6rem);
-  font-weight: 700;
-  letter-spacing: -0.045em;
+  font-weight: 500;
+  letter-spacing: -0.03em;
   line-height: 0.98;
 }
 
@@ -276,8 +266,8 @@ useHead({
 .prose :deep(h2),
 .prose :deep(h3) {
   color: var(--ink);
-  font-family: var(--font-display);
-  font-weight: 700;
+  font-family: var(--font-sans);
+  font-weight: 500;
   scroll-margin-top: 24px;
 }
 
@@ -321,7 +311,7 @@ useHead({
 
 .prose :deep(strong) {
   color: var(--ink);
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .prose :deep(a) {
@@ -418,7 +408,7 @@ useHead({
 
 .article-end a {
   color: var(--accent);
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .related {
@@ -437,9 +427,9 @@ useHead({
 
 .related__heading h2 {
   margin: 0;
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: 1rem;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: 0.16em;
 }
 

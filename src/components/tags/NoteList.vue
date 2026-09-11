@@ -45,23 +45,23 @@ defineProps<{
 .note__issue {
   font-family: var(--font-display);
   font-size: 1.15rem;
-  font-weight: 700;
-  letter-spacing: -0.04em;
+  font-weight: 500;
+  letter-spacing: -0.02em;
 }
 
 .note strong {
   min-width: 0;
   font-family: var(--font-serif);
   font-size: 1.05rem;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.4;
 }
 
 .note time {
   color: var(--muted);
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: 0.78rem;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: 0.06em;
   white-space: nowrap;
 }

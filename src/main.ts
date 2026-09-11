@@ -2,6 +2,12 @@ import { ViteSSG } from "vite-ssg";
 import routes from "~pages";
 import App from "./App.vue";
 import ArticleLayout from "./components/article/ArticleLayout.vue";
+import "@fontsource-variable/inter/wght.css";
+import "@fontsource/eb-garamond/latin-400.css";
+import "@fontsource/eb-garamond/latin-500.css";
+import "@fontsource/eb-garamond/latin-600.css";
+import "@fontsource-variable/jetbrains-mono/wght.css";
+
 import "./styles/global.css";
 
 export const createApp = ViteSSG(

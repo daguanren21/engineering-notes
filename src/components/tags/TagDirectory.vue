@@ -49,14 +49,14 @@ withDefaults(
 .topic span:first-child {
   font-family: var(--font-serif);
   font-size: 1.02rem;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .topic span:last-child {
   color: var(--muted);
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: 0.78rem;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .topic:hover,

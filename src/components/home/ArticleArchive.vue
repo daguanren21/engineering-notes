@@ -91,17 +91,17 @@ const isFiltered = computed(() => query.value.trim() !== "");
 
 .issues__header h2 {
   margin: 0;
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: 1rem;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: 0.18em;
 }
 
 .issues__header > p {
   color: var(--muted);
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: 0.78rem;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: 0.08em;
 }
 
@@ -115,9 +115,9 @@ const isFiltered = computed(() => query.value.trim() !== "");
 
 .issues__search > label {
   color: var(--muted);
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: 0.78rem;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: 0.08em;
 }
 
@@ -161,7 +161,7 @@ const isFiltered = computed(() => query.value.trim() !== "");
   cursor: pointer;
   font: inherit;
   font-size: 0.78rem;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .issues__field input::-webkit-search-cancel-button {
@@ -193,23 +193,23 @@ const isFiltered = computed(() => query.value.trim() !== "");
 .issue__num {
   font-family: var(--font-display);
   font-size: 1.15rem;
-  font-weight: 700;
-  letter-spacing: -0.04em;
+  font-weight: 500;
+  letter-spacing: -0.02em;
 }
 
 .issue strong {
   min-width: 0;
   font-family: var(--font-serif);
   font-size: 1.05rem;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.4;
 }
 
 .issue time {
   color: var(--muted);
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: 0.78rem;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: 0.06em;
   white-space: nowrap;
 }

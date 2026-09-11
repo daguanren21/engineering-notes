@@ -23,7 +23,9 @@
 
 .site-footer__brand {
   color: var(--ink);
-  letter-spacing: 0.16em;
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: 0.08em;
 }
 
 .site-footer a {

@@ -9,7 +9,6 @@ defineProps<{
 
 <template>
   <section class="cover" aria-labelledby="cover-title">
-    <p class="cover__folio">本期封面</p>
     <h1 id="cover-title">
       <span v-for="part in article.titleParts" :key="part">{{ part }}</span>
     </h1>
@@ -33,22 +32,12 @@ defineProps<{
   max-width: 46rem;
   padding-block: clamp(56px, 8vw, 108px) clamp(64px, 9vw, 120px);
 }
-
-.cover__folio {
-  margin: 0 0 28px;
-  color: var(--muted);
-  font-family: var(--font-sans);
-  font-size: 0.78rem;
-  font-weight: 400;
-  letter-spacing: 0;
-}
-
 .cover h1 {
   display: grid;
   margin: 0;
-  font-family: var(--font-display);
+  font-family: var(--font-serif);
   font-size: clamp(2.6rem, 6.4vw, 5.4rem);
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: -0.03em;
   line-height: 0.96;
   text-wrap: balance;
@@ -70,10 +59,10 @@ defineProps<{
 .cover__source {
   margin: 22px 0 0;
   color: var(--muted);
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
+  font-weight: 500;
+  letter-spacing: 0;
 }
 
 .cover__source cite {

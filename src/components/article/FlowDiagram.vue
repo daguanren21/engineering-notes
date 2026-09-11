@@ -64,7 +64,7 @@ const diagram = computed(() => parsed.value.diagram);
   color: var(--ink);
   font-family: var(--font-sans);
   font-size: 0.95rem;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: -0.01em;
 }
 
@@ -121,7 +121,7 @@ const diagram = computed(() => parsed.value.diagram);
   background: var(--surface);
   font-family: var(--font-sans);
   font-size: 0.82rem;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1.4;
   overflow-wrap: anywhere;
 }

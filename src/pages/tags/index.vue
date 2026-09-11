@@ -44,17 +44,17 @@ useHead({
 
 .index-page__header h1 {
   margin: 0;
-  font-family: var(--font-display);
+  font-family: var(--font-serif);
   font-size: clamp(2rem, 5vw, 3.4rem);
-  font-weight: 700;
-  letter-spacing: -0.04em;
+  font-weight: 500;
+  letter-spacing: -0.03em;
 }
 
 .index-page__header > p {
   color: var(--muted);
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: 0.78rem;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: 0.08em;
 }
 
