@@ -1,0 +1,9 @@
+UI design comp of a website homepage, desktop 1440x900, a Chinese technical periodical issue laid open. This is a designed web page, not a photograph of a magazine and not a poster.
+
+LAYOUT REGIONS, top to bottom:
+1. MASTHEAD BAND — a full-bleed cobalt blue (#1848C8) rectangle occupying the top 28% of the viewport. Left: 工程手记 in condensed grotesque white. Center-right: enormous condensed issue numeral 13 in white, architectural scale, the largest object on the page. Right of the numeral, small white type: 第 13 期 / 2026-09-10 / 一期一判断. No logo mark, no seal, no rust accent.
+2. COVER STORY — on cold fluorescent-white newsprint below the masthead. Display title in carbon black, two lines: 自托管机器： / 把工具执行留在内网. Under it one sentence in smaller black: Cursor 自托管机器的调度模型：池化 worker、按需伸缩与休眠恢复，以及把工具执行留在自有网络内的边界. A single underlined text link 阅读本期 — not a button, not a card.
+3. FOLIO RAIL — a thin vertical black rule on the far right edge with 13 printed as a folio, like a magazine page number.
+4. BELOW THE FOLD hint — a bound run of prior issue numbers 12 11 09 08 as small condensed numerals, not cards, not a grid of thumbnails.
+
+NO cards, NO rounded corners, NO shadows, NO cream paper, NO terracotta, NO serif display like Playfair, NO three-column blog index, NO hero lede competing with the issue, NO navigation pills. Fluorescent white ground, cobalt field, carbon ink only. Photoreal UI screenshot, sharp type, Chinese characters correctly drawn.

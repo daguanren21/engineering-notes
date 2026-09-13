@@ -1,0 +1,9 @@
+UI design comp of a website homepage, desktop 1440x900, a Chinese technical periodical opened as a two-page spread on a light table. Designed web page, not a photo of a magazine, not a poster.
+
+LAYOUT REGIONS:
+1. LEFT PAGE (45% width) — cold fluorescent-white sheet. Top: small condensed 工程手记. Then a cobalt rectangle occupying the upper half of the left page containing only the issue numeral 13 in white, huge, and 第 13 期 2026-09-10 in tiny white type under it. The cobalt is a printed color field, not a button.
+2. GUTTER — a physical fold shadow, 8px, between left and right sheets. Not a card gap.
+3. RIGHT PAGE (55% width) — cover story. Title 自托管机器：把工具执行留在内网 in carbon black display. One-sentence judgement. Source line: Cursor · Self-hosted machines. Single text link 阅读本期 at the baseline of the right page.
+4. BOTTOM OF BOTH PAGES — a continuous bound-run of prior issues as a typeset contents strip: 12 Graph Engineering / 11 OMP 源码 / 09 pstack. Not cards.
+
+NO rounded cards, NO cream, NO rust, NO hairline notebook grid, NO centered SaaS hero, NO Playfair/Fraunces. Cobalt + fluorescent white + carbon black only. Sharp UI screenshot, correct Chinese.

@@ -1,0 +1,9 @@
+UI design comp of a website homepage, desktop 1440x900, a Chinese technical periodical whose architecture is the folio. Designed web page, not a poster, not a photo.
+
+LAYOUT REGIONS:
+1. LEFT EDGE FOLIO COLUMN — 140px-wide cobalt vertical strip running the full height of the viewport. Stacked white condensed type, rotated or stacked: 工程手记 / 13 / 2026-09-10. The numeral 13 is the tallest mark in the strip.
+2. MAIN SHEET — fluorescent white. The cover story starts immediately, no site slogan. Title at display scale: 自托管机器：把工具执行留在内网. Judgement paragraph. Source: Cursor. Text link 阅读本期.
+3. BACK-ISSUE SPINE — right edge, a vertical stack of small issue numerals 12, 11, 09, 08, 07 like a bound volume's visible spines. Current 13 is not repeated there; it already owns the left strip.
+4. NO HEADER NAV BAR — wayfinding is the folio strip and the spine, not a website menu of pills.
+
+NO cards, NO cream paper, NO rust accent, NO three-column grid, NO serif display from the AI-default list. Cobalt strip + white sheet + carbon text. Sharp UI screenshot, correct Chinese characters.
