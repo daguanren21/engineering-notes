@@ -1,9 +1,11 @@
 {
   "seen": [
     "https://cursor.com/changelog/self-hosted-machines",
-    "https://deepmind.google/blog/introducing-weathernext-3-our-most-advanced-and-accurate-global-weather-ai-model/"
+    "https://deepmind.google/blog/introducing-weathernext-3-our-most-advanced-and-accurate-global-weather-ai-model/",
+    "https://simonwillison.net/2026/Sep/12/astra-running-routes/"
   ],
   "recentTeams": [
+    "Simon Willison",
     "Google DeepMind",
     "Cursor"
   ]
