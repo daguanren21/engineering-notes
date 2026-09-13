@@ -58,13 +58,14 @@ const goodBody = [
   "每次失败的输入、环境快照和判定结果都应该落盘，否则下一次调试仍然从零开始。",
 ].join("\n");
 
-const goodArticle = {
-  title: "Harness 循环的所有权与恢复",
+const goodResponse = {
   titleParts: ["Harness 循环的", "所有权与恢复"],
   description: "循环放在哪一层，决定了中断之后能恢复什么。",
   tags: ["Agent Harness", "系统设计", "状态恢复"],
   body: goodBody,
 };
+
+const goodArticle = { ...goodResponse, title: "Harness 循环的所有权与恢复" };
 
 let scratch: string;
 
@@ -127,7 +128,7 @@ describe("extractJson", () => {
 
 describe("authorArticle", () => {
   it("accepts a compliant response on the first attempt", async () => {
-    const stub = stubCompletion([goodArticle]);
+    const stub = stubCompletion([goodResponse]);
     const result = await authorArticle(item, { stopWords: ["AI"] });
 
     assert.equal(result.attempts, 1);
@@ -139,7 +140,7 @@ describe("authorArticle", () => {
     // The body carries a ```flow block and a code sample with braces, both of
     // which broke the previous fence-stripping approach.
     const withBraces = {
-      ...goodArticle,
+      ...goodResponse,
       body: `${goodArticle.body}\n\n\`\`\`ts\nconst config = { retries: 3 };\n\`\`\`\n`,
     };
     stubCompletion([withBraces]);
@@ -150,17 +151,50 @@ describe("authorArticle", () => {
     assert.match(result.article.body, /retries: 3/);
   });
 
-  it("retries once when the first response breaks the contract", async () => {
-    const broken = { ...goodArticle, titleParts: ["拼不回去的", "标题"] };
-    const stub = stubCompletion([broken, goodArticle]);
+  it("does not let an unrequested title override the display title", async () => {
+    const response = {
+      ...goodResponse,
+      title: "GPT-6 Astra 生成跑步路线：能力与透明度",
+      titleParts: ["GPT-6 Astra 生成跑步路线", "能力与透明度"],
+    };
+    stubCompletion([response]);
+    const result = await authorArticle(item, { stopWords: ["AI"] });
+    const stored = await storeArticle(result.article, item, { draft: true });
+    const frontmatter = ArticleFrontmatterSchema.parse(
+      matter(await readFile(stored.file, "utf8")).data,
+    );
+
+    assert.equal(result.attempts, 1);
+    assert.equal(frontmatter.title, "GPT-6 Astra 生成跑步路线能力与透明度");
+    assert.equal(frontmatter.title, frontmatter.titleParts.join(""));
+  });
+
+  it("preserves punctuation and spaces in the model's title parts", async () => {
+    stubCompletion([{
+      ...goodResponse,
+      titleParts: ["GPT-6 Astra：", "Agent Harness ", "的恢复边界"],
+    }]);
     const result = await authorArticle(item, { stopWords: ["AI"] });
 
-    assert.equal(result.attempts, 2);
-    assert.equal(stub.calls, 2);
+    assert.equal(result.article.title, "GPT-6 Astra：Agent Harness 的恢复边界");
+    assert.deepEqual(result.article.titleParts, [
+      "GPT-6 Astra：", "Agent Harness ", "的恢复边界",
+    ]);
+    assert.equal(result.attempts, 1);
+  });
+
+  it("rejects derived titles outside the existing length limits", async () => {
+    for (const titleParts of [["短"], ["a".repeat(70), "b".repeat(70)]]) {
+      stubCompletion([{ ...goodResponse, titleParts }]);
+      await assert.rejects(
+        () => authorArticle(item, { stopWords: ["AI"] }),
+        /failed validation twice/,
+      );
+    }
   });
 
   it("fails loudly when the contract is broken twice", async () => {
-    const broken = { ...goodArticle, tags: ["AI"] };
+    const broken = { ...goodResponse, tags: ["AI"] };
     stubCompletion([broken, broken]);
 
     await assert.rejects(
@@ -181,7 +215,7 @@ describe("authorArticle", () => {
     globalThis.fetch = (async (_input: unknown, init?: RequestInit) => {
       sentModel = (JSON.parse(String(init?.body)) as { model?: unknown }).model;
       return new Response(
-        JSON.stringify({ choices: [{ message: { content: JSON.stringify(goodArticle) } }] }),
+        JSON.stringify({ choices: [{ message: { content: JSON.stringify(goodResponse) } }] }),
         { status: 200, headers: { "content-type": "application/json" } },
       );
     }) as typeof fetch;
@@ -196,7 +230,7 @@ describe("authorArticle", () => {
 
   it("rejects an article with no diagram", async () => {
     const textOnly = {
-      ...goodArticle,
+      ...goodResponse,
       body: goodArticle.body.replace(/```flow[\s\S]*?```\n\n/, ""),
     };
     stubCompletion([textOnly, textOnly]);
@@ -209,13 +243,13 @@ describe("authorArticle", () => {
 
   it("rejects a malformed diagram and asks for a repair", async () => {
     const broken = {
-      ...goodArticle,
+      ...goodResponse,
       body: goodArticle.body.replace(
         "layer: Harness | *记录中断点* | 从断点续跑",
         "架构层：记录中断点",
       ),
     };
-    const stub = stubCompletion([broken, goodArticle]);
+    const stub = stubCompletion([broken, goodResponse]);
     const result = await authorArticle(item, { stopWords: ["AI"] });
 
     assert.equal(result.attempts, 2);
@@ -223,8 +257,8 @@ describe("authorArticle", () => {
   });
 
   it("retries a response that violates the output schema", async () => {
-    const truncated = { ...goodArticle, body: "太短了。" };
-    const stub = stubCompletion([truncated, goodArticle]);
+    const truncated = { ...goodResponse, body: "太短了。" };
+    const stub = stubCompletion([truncated, goodResponse]);
     const result = await authorArticle(item, { stopWords: ["AI"] });
 
     assert.equal(result.attempts, 2);

@@ -27,6 +27,11 @@ const AuthoredArticleSchema = z.object({
   body: z.string().min(200),
 });
 
+// The model owns display lines; the full title is derived, never generated twice.
+const ModelArticleSchema = AuthoredArticleSchema.omit({ title: true })
+  .transform((article) => ({ ...article, title: article.titleParts.join("") }))
+  .pipe(AuthoredArticleSchema);
+
 interface ChatCompletion {
   choices?: { message?: { content?: string } }[];
   error?: { message?: string };
@@ -201,12 +206,6 @@ const requiredTags = 3;
 function reviewArticle(article: AuthoredArticle, stopWords: readonly string[]): string | null {
   const problems: string[] = [];
 
-  if (article.titleParts.join("") !== article.title) {
-    problems.push(
-      `titleParts 拼接后必须等于 title。当前拼接结果是「${article.titleParts.join("")}」，title 是「${article.title}」。`,
-    );
-  }
-
   const headings = [...article.body.matchAll(/^##\s+(.+)$/gm)].map((match) =>
     (match[1] ?? "").trim(),
   );
@@ -274,7 +273,7 @@ export async function authorArticle(
   for (let attempt = 1; attempt <= 2; attempt += 1) {
     const raw = await requestArticle(brief, item, repairNote);
 
-    const parsed = AuthoredArticleSchema.safeParse(raw);
+    const parsed = ModelArticleSchema.safeParse(raw);
     if (!parsed.success) {
       repairNote = describeIssues(parsed.error);
       if (attempt === 2) {

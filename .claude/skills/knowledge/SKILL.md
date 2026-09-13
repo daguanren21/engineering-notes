@@ -110,7 +110,6 @@ markdown code fence around it.
 
 ```json
 {
-  "title": "中文标题，不超过 32 个字符，冒号或破折号只用一个",
   "titleParts": ["标题第一行", "标题第二行"],
   "description": "一到两句中文摘要，说明这篇笔记给出了什么判断，不超过 90 个字符",
   "tags": ["标签一", "标签二", "标签三"],
@@ -120,9 +119,12 @@ markdown code fence around it.
 
 Field rules:
 
-- `titleParts` — the same title split for multi-line display. Concatenated
-  without separators, the parts must equal `title` exactly. Use 2 or 3 parts,
-  each short enough to sit on one display line.
+- `titleParts` — the complete Chinese title split into 2 or 3 display lines.
+  The pipeline concatenates them without separators to derive `title`; do not
+  return a separate `title` field. Keep the combined title under 32 characters
+  and use at most one colon or dash. Include all punctuation and any spaces
+  between English words in the parts themselves; nothing is inserted at a
+  line boundary. Each part should fit on one display line.
 - `tags` — exactly 3. Reuse an existing tag when the topic matches one:
   Agent Harness, 系统设计, 工程实践, 可靠性, 工程组织, Multi-Agent, Agent Runtime,
   Prompt Cache, 执行循环, 状态恢复, 课程笔记, OpenAI API, Claude Code, GitHub Engineering,
