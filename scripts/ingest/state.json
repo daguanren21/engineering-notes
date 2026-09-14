@@ -2,9 +2,11 @@
   "seen": [
     "https://cursor.com/changelog/self-hosted-machines",
     "https://deepmind.google/blog/introducing-weathernext-3-our-most-advanced-and-accurate-global-weather-ai-model/",
-    "https://simonwillison.net/2026/Sep/12/astra-running-routes/"
+    "https://simonwillison.net/2026/Sep/12/astra-running-routes/",
+    "https://github.blog/ai-and-ml/github-copilot/marketing-ops-as-code-automating-events-from-planning-to-follow-up-on-github/"
   ],
   "recentTeams": [
+    "GitHub",
     "Simon Willison",
     "Google DeepMind",
     "Cursor"
