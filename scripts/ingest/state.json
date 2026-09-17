@@ -5,9 +5,11 @@
     "https://simonwillison.net/2026/Sep/12/astra-running-routes/",
     "https://github.blog/ai-and-ml/github-copilot/marketing-ops-as-code-automating-events-from-planning-to-follow-up-on-github/",
     "https://blog.google/innovation-and-ai/technology/developers-tools/devfest2026/",
-    "https://huggingface.co/blog/ibm-research/altk-evolve-consistency"
+    "https://huggingface.co/blog/ibm-research/altk-evolve-consistency",
+    "https://engineering.fb.com/2026/09/03/core-infra/zgateway-proxy-zippydb-meta/"
   ],
   "recentTeams": [
+    "Meta Engineering",
     "Hugging Face",
     "Google",
     "GitHub",
