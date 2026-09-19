@@ -7,9 +7,11 @@
     "https://blog.google/innovation-and-ai/technology/developers-tools/devfest2026/",
     "https://huggingface.co/blog/ibm-research/altk-evolve-consistency",
     "https://engineering.fb.com/2026/09/03/core-infra/zgateway-proxy-zippydb-meta/",
-    "https://www.microsoft.com/en-us/research/blog/gigapath-flash-and-gigatime-flash-toward-population-scale-discovery-with-efficient-pathology-foundation-models/"
+    "https://www.microsoft.com/en-us/research/blog/gigapath-flash-and-gigatime-flash-toward-population-scale-discovery-with-efficient-pathology-foundation-models/",
+    "https://www.oneusefulthing.org/p/the-overhang"
   ],
   "recentTeams": [
+    "Ethan Mollick",
     "Microsoft Research",
     "Meta Engineering",
     "Hugging Face",
