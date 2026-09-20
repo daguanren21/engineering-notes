@@ -8,9 +8,11 @@
     "https://huggingface.co/blog/ibm-research/altk-evolve-consistency",
     "https://engineering.fb.com/2026/09/03/core-infra/zgateway-proxy-zippydb-meta/",
     "https://www.microsoft.com/en-us/research/blog/gigapath-flash-and-gigatime-flash-toward-population-scale-discovery-with-efficient-pathology-foundation-models/",
-    "https://www.oneusefulthing.org/p/the-overhang"
+    "https://www.oneusefulthing.org/p/the-overhang",
+    "https://github.com/anthropics/claude-code/releases/tag/v2.1.277"
   ],
   "recentTeams": [
+    "Anthropic",
     "Ethan Mollick",
     "Microsoft Research",
     "Meta Engineering",
