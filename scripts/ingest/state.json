@@ -10,9 +10,11 @@
     "https://www.microsoft.com/en-us/research/blog/gigapath-flash-and-gigatime-flash-toward-population-scale-discovery-with-efficient-pathology-foundation-models/",
     "https://www.oneusefulthing.org/p/the-overhang",
     "https://github.com/anthropics/claude-code/releases/tag/v2.1.277",
-    "https://github.com/openai/openai-agents-python/releases/tag/v0.22.3"
+    "https://github.com/openai/openai-agents-python/releases/tag/v0.22.3",
+    "https://github.com/xai-org/grok-build/commit/4247f661689354b831191f11eeeac8424993fe3d"
   ],
   "recentTeams": [
+    "xAI",
     "OpenAI",
     "Anthropic",
     "Ethan Mollick",
