@@ -12,9 +12,11 @@
     "https://github.com/anthropics/claude-code/releases/tag/v2.1.277",
     "https://github.com/openai/openai-agents-python/releases/tag/v0.22.3",
     "https://github.com/xai-org/grok-build/commit/4247f661689354b831191f11eeeac8424993fe3d",
-    "https://cursor.com/changelog/projects"
+    "https://cursor.com/changelog/projects",
+    "https://deepmind.google/blog/say-hello-to-gemini-38-text-to-speech/"
   ],
   "recentTeams": [
+    "Google DeepMind",
     "Cursor",
     "xAI",
     "OpenAI",
@@ -25,7 +27,6 @@
     "Hugging Face",
     "Google",
     "GitHub",
-    "Simon Willison",
-    "Google DeepMind"
+    "Simon Willison"
   ]
 }
