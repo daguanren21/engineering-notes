@@ -13,9 +13,11 @@
     "https://github.com/openai/openai-agents-python/releases/tag/v0.22.3",
     "https://github.com/xai-org/grok-build/commit/4247f661689354b831191f11eeeac8424993fe3d",
     "https://cursor.com/changelog/projects",
-    "https://deepmind.google/blog/say-hello-to-gemini-38-text-to-speech/"
+    "https://deepmind.google/blog/say-hello-to-gemini-38-text-to-speech/",
+    "https://simonwillison.net/2026/Sep/24/commit-rewriter/"
   ],
   "recentTeams": [
+    "Simon Willison",
     "Google DeepMind",
     "Cursor",
     "xAI",
@@ -26,7 +28,6 @@
     "Meta Engineering",
     "Hugging Face",
     "Google",
-    "GitHub",
-    "Simon Willison"
+    "GitHub"
   ]
 }
