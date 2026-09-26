@@ -14,9 +14,11 @@
     "https://github.com/xai-org/grok-build/commit/4247f661689354b831191f11eeeac8424993fe3d",
     "https://cursor.com/changelog/projects",
     "https://deepmind.google/blog/say-hello-to-gemini-38-text-to-speech/",
-    "https://simonwillison.net/2026/Sep/24/commit-rewriter/"
+    "https://simonwillison.net/2026/Sep/24/commit-rewriter/",
+    "https://github.blog/ai-and-ml/github-copilot/github-copilot-app-for-beginners-how-to-build-custom-workflows-with-canvases/"
   ],
   "recentTeams": [
+    "GitHub",
     "Simon Willison",
     "Google DeepMind",
     "Cursor",
@@ -27,7 +29,6 @@
     "Microsoft Research",
     "Meta Engineering",
     "Hugging Face",
-    "Google",
-    "GitHub"
+    "Google"
   ]
 }
