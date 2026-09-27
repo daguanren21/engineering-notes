@@ -1,6 +1,6 @@
 /**
- * Daily digest: collect upstream sources, pick the highest-signal unseen item,
- * and ask DeepSeek to write it up using the `knowledge` skill as the brief.
+ * Daily digest: collect unseen AI Agent engineering sources, then ask DeepSeek
+ * to admit or reject them using the `knowledge` skill before writing an article.
  *
  * Run locally with:  node scripts/ingest/run.ts --dry-run
  *
@@ -54,7 +54,7 @@ async function main(): Promise<number> {
 
   const candidates = selectCandidates(items, config, seen, new Date(), state.recentTeams);
   console.log(
-    `[digest] ${candidates.length} candidate(s) after filtering` +
+    `[digest] ${candidates.length} AI Agent engineering candidate(s) after filtering` +
       (state.recentTeams.length > 0
         ? ` | recently covered: ${state.recentTeams.slice(0, 5).join(", ")}`
         : ""),
@@ -83,7 +83,7 @@ async function main(): Promise<number> {
       console.log(`    ${team.padEnd(20)} ${count}`);
     }
 
-    console.log("[digest] top candidates in pick order:");
+    console.log("[digest] topical candidates in pick order (editorial review still required):");
     for (const item of candidates.slice(0, 12)) {
       console.log(
         `  ${String(item.text.length).padStart(6)}c  ${item.kind.padEnd(9)} ${item.team.padEnd(18)} ` +
@@ -98,14 +98,22 @@ async function main(): Promise<number> {
 
   const limit = options.limit ?? config.selection.maxArticlesPerRun;
   let created = 0;
+  let skipped = 0;
   const failures: string[] = [];
 
   for (const item of candidates.slice(0, limit)) {
-    console.log(`[digest] writing from ${item.team}: ${item.title}`);
+    console.log(`[digest] reviewing from ${item.team}: ${item.title}`);
     try {
-      const { article, attempts } = await authorArticle(item, {
+      const result = await authorArticle(item, {
         stopWords: config.selection.tagStopWords,
       });
+      if ("skipReason" in result) {
+        console.log(`[digest] skipped ${item.url}: ${result.skipReason}`);
+        state.seen.push(item.id);
+        skipped += 1;
+        continue;
+      }
+      const { article, attempts } = result;
       const stored = await storeArticle(article, item, { draft: options.draft });
       console.log(
         `[digest] wrote ${stored.file} (issue ${stored.issue}, ${article.body.length} chars, ${attempts} attempt(s))`,
@@ -130,13 +138,14 @@ async function main(): Promise<number> {
   await saveState(state);
 
   setOutput("created", created > 0 ? "true" : "false");
+  setOutput("state_changed", created + skipped + failures.length > 0 ? "true" : "false");
 
   if (created === 0 && failures.length > 0) {
-    console.error("[digest] no article was written and every attempt failed");
+    console.error(`[digest] no article was written and ${failures.length} attempt(s) failed`);
     return 1;
   }
 
-  console.log(`[digest] done: ${created} article(s) written`);
+  console.log(`[digest] done: ${created} article(s) written, ${skipped} rejected by editorial review`);
   return 0;
 }
 

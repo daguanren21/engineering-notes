@@ -32,6 +32,11 @@ const ModelArticleSchema = AuthoredArticleSchema.omit({ title: true })
   .transform((article) => ({ ...article, title: article.titleParts.join("") }))
   .pipe(AuthoredArticleSchema);
 
+const ModelSkipSchema = z.object({
+  skip: z.literal(true),
+  reason: z.string().trim().min(1),
+}).strict();
+
 interface ChatCompletion {
   choices?: { message?: { content?: string } }[];
   error?: { message?: string };
@@ -176,7 +181,7 @@ async function requestArticle(
     {
       role: "user",
       content: [
-        "把下面这个来源写成一篇 工程手记 读书笔记。只返回一个 JSON 对象。",
+        "先按专刊选题门槛审核下面的来源；相关且材料充分才写成 工程手记 读书笔记，否则返回拒稿。只返回输出契约中的一个 JSON 对象。",
         "",
         sourcePayload(item),
         ...(repairNote ? ["", "上一版不符合要求，请修正后重新返回完整 JSON：", repairNote] : []),
@@ -247,10 +252,9 @@ function reviewArticle(article: AuthoredArticle, stopWords: readonly string[]): 
   return problems.length > 0 ? problems.join("\n") : null;
 }
 
-export interface AuthoredResult {
-  article: AuthoredArticle;
-  attempts: number;
-}
+export type AuthoredResult =
+  | { article: AuthoredArticle; attempts: number }
+  | { skipReason: string; attempts: number };
 
 function describeIssues(error: z.ZodError): string {
   return error.issues
@@ -260,8 +264,8 @@ function describeIssues(error: z.ZodError): string {
 
 /**
  * Retries once with the findings appended, then gives up loudly. Shape errors
- * from the schema go through the same loop as style findings, so a malformed
- * response gets a second chance instead of failing the run outright.
+ * from either response branch and article style findings share this loop.
+ * A valid editorial rejection returns immediately without article repair.
  */
 export async function authorArticle(
   item: SourceItem,
@@ -273,13 +277,22 @@ export async function authorArticle(
   for (let attempt = 1; attempt <= 2; attempt += 1) {
     const raw = await requestArticle(brief, item, repairNote);
 
-    const parsed = ModelArticleSchema.safeParse(raw);
+    // Reserve rejection keys before the article schema can strip unknown fields.
+    const isSkipResponse =
+      raw !== null && typeof raw === "object" && ("skip" in raw || "reason" in raw);
+    const parsed = isSkipResponse
+      ? ModelSkipSchema.safeParse(raw)
+      : ModelArticleSchema.safeParse(raw);
     if (!parsed.success) {
       repairNote = describeIssues(parsed.error);
       if (attempt === 2) {
         throw new Error(`model output failed validation twice:\n${repairNote}`);
       }
       continue;
+    }
+
+    if ("skip" in parsed.data) {
+      return { skipReason: parsed.data.reason, attempts: attempt };
     }
 
     const problem = reviewArticle(parsed.data, options.stopWords);

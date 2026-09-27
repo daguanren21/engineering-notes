@@ -2,9 +2,9 @@
 
 ## What this is
 
-工程手记 (Engineering Notes) — a Chinese-language static publication that turns
-long-form engineering sources (papers, source-code studies, vendor engineering
-posts, team write-ups) into structured reading notes that stay useful months
+工程手记 (Engineering Notes) — a Chinese-language static publication about
+AI Agent engineering. It turns relevant papers, source-code studies and
+engineering write-ups into structured reading notes that stay useful months
 later. Built with Vue 3 + `vite-ssg`, deployed as static files to GitHub Pages.
 
 ## Audience
@@ -20,6 +20,14 @@ Convert a source into a reusable engineering judgement: restate the problem,
 name the constraints, keep the evidence, land on a conclusion. The site is a
 record of reasoning, not a news digest. Recency is a tiebreaker, never the
 organising principle.
+
+The editorial scope is Agent execution and harnesses, tool calling, context
+and memory, orchestration, evaluation, reliability, and permission boundaries.
+General AI news, consumer launches, events and infrastructure announcements
+are not eligible merely because they mention AI or an Agent vendor. A source
+must support a reusable Agent engineering judgement. Publish nothing when
+the available material is off-topic or insufficient; team rotation never
+overrides relevance.
 
 ## Operating context
 

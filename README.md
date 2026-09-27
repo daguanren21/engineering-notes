@@ -1,7 +1,7 @@
 # 工程手记
 
-中文工程阅读笔记。把长文、源码和团队工程文章整理成若干个月后仍然能用的判断：
-还原问题、辨认边界、保留证据、给出结论。
+面向 AI Agent 工程的中文阅读笔记。把执行系统、工具调用、上下文、协作与评测相关的
+长文和源码整理成可复用的判断：还原问题、辨认边界、保留证据、给出结论。
 
 Vue 3 + `vite-ssg` 预渲染，构建产物是纯静态文件，部署在 GitHub Pages。
 
@@ -38,8 +38,8 @@ pnpm test:ingest
 
 ## 每日摘要流水线
 
-每天定时抓取上游来源，选一条信息量最大的，用 `knowledge` skill 作为写作规范
-调用 DeepSeek 生成文章，校验通过后提交到 `main`，部署工作流随即发布。
+每天抓取上游来源，先筛选 AI Agent 工程材料，再用 `knowledge` skill 进行编辑准入和写作。
+没有相关且足够扎实的材料就不发；合法拒稿不是流水线失败。
 
 ```
 .github/workflows/digest.yml   每天 00:00 UTC（北京时间 08:00）
@@ -52,51 +52,47 @@ pnpm test:ingest
         │
         ├─ scripts/ingest/state.json   已处理条目 + 已覆盖团队，避免重复
         │
-        ├─ scripts/ingest/write.ts     调用模型 → 校验 → 写成 Markdown
-        │     └─ 写作规范来自 .claude/skills/knowledge/SKILL.md
+        ├─ scripts/ingest/collect.ts   主题门槛 → 合格候选的团队轮转
+        ├─ scripts/ingest/write.ts     编辑准入 → 拒稿，或生成并校验 Markdown
+        │     └─ 选题与写作规范来自 .claude/skills/knowledge/SKILL.md
         │
         └─ pnpm build                  构建不通过就不提交
 ```
 
 ### 选材规则
 
-按「最久没覆盖的团队 → kind → 团队优先级 → 时间」排序，取第一条。
+**先判断主题，再考虑来源覆盖；不以品牌、发布时间或日更数量替代相关性。**
 
-覆盖度排在最前面是有原因的：只按 kind 排的话，某些团队会被永久压在下面。
-Anthropic 完全没有新闻 feed，只有 GitHub release，任何一种 kind 权重都会让
-它排在任何一篇博客之后，永远选不到。按最久未覆盖排序保证每个团队都能轮到。
+候选先经过已处理、正文长度、时间窗口和主题过滤。主题门槛只读取标题与正文：
+标题或正文前部需要建立 Agent、coding agent、agentic、MCP 或智能体语境，
+正文还要涉及至少两类具体机制——工具调用、执行编排、上下文记忆、评测恢复、
+沙箱权限。团队名和 URL 不作为放行依据；普通 AI/LLM、HTTP User-Agent、
+监控代理或文末顺带提到 Agent 都不能单独使文章入选。
 
-kind 的默认顺序 `news > release > community > commits` 可以在
-`selection.kindOrder` 里改。实测 18 天的轮转结果：
+这是偏重精度的词法预筛，不是语义证明。它可能漏掉只深入一种机制或较晚才说明主题的
+好文章；不得为凑稿放宽门槛。模型随后还要判断原文主体与证据是否足以支撑
+AI Agent 工程解读。通用天气/语音模型、消费产品、活动、地区扩张和泛基础设施新闻
+不能被强行改写成 Agent 经验。
 
-| 天 | 团队 | 类型 | 正文字数 |
-|---|---|---|---|
-| 1 | Cursor | news | 2,047 |
-| 2 | Google DeepMind | news | 11,361 |
-| 3 | GitHub | news | 21,605 |
-| 4 | Simon Willison | news | 1,636 |
-| 5 | Google | news | 3,630 |
-| 6 | Hugging Face | news | 12,278 |
-| 7 | Meta Engineering | news | 18,803 |
-| 8 | Microsoft Research | news | 9,862 |
-| 9 | Ethan Mollick | news | 13,835 |
-| 10 | Anthropic | release | 7,858 |
-| 11 | OpenAI | release | 19,522 |
-| 12 | xAI | commits | 2,418 |
+只有通过主题预筛的候选才按「最久没覆盖的团队 → kind → 团队优先级 → 时间」排序。
+`kind` 默认顺序为 `news > release > community > commits`，可在
+`selection.kindOrder` 修改。轮转不能把无关来源救回来，拒稿也不算覆盖了该团队。
 
-### 关于各家的 feed，实测结论
+### 默认来源
 
-`scripts/ingest/sources.json` 里的每个地址都实际拉取并用解析器验证过：
+`scripts/ingest/sources.json` 保留已有的 10 个 Agent/开发工具与专业作者 feed，
+没有新增未经验证的地址。通用厂商新闻、普通 model SDK、泛研究/基础设施和通用
+commit 流已移出默认配置。
 
-| 来源 | 情况 |
+| 来源 | 用途与边界 |
 |---|---|
-| Cursor | 官网 changelog 自带 RSS，单条 1.3k–6k 字符，质量最好 |
-| Anthropic | **没有任何 feed**，所有路径 404。只能靠 `claude-code` 的 GitHub release |
-| xAI | **没有 feed**，`x.ai/news` 对脚本返回 403。只能靠 GitHub commits / release |
-| OpenAI | 官网 feed 只有 165 字符的摘要，且页面拒绝脚本抓取（403），实际内容来自 GitHub release 和社区论坛 |
-| Google / DeepMind / Hugging Face | feed 只有标题（Hugging Face 连 description 都没有），由 `enrich.ts` 抓正文补全 |
-| GitHub | blog、changelog、engineering 三个 feed 都是全文，质量很高。仓库类 feed（releases / commits）不能抓页面补全，见下 |
-| Matt Pocock | `aihero.dev/rss.xml` 只有标题，抓正文可补全；`mattpocock/skills` 的 releases 是全文。他是本仓库用的 `grill-me` skill 的作者 |
+| Cursor changelog / 社区 | 开发工具机制与使用问题，仍须通过主题门槛 |
+| Claude Code / Codex releases | coding agent 的执行、工具、权限与恢复变化 |
+| OpenAI Agents SDK releases | Agent 运行与编排接口，不再收集普通模型 SDK 更新 |
+| Karpathy / Lilian Weng / Simon Willison | 专业作者来源，不因作者身份自动合格 |
+| aihero / Matt Pocock skills releases | Agent 开发与 skills 实践；短 feed 可按配置补正文 |
+
+版本号标题不直接排除：如果正文前部建立 Agent 语境且有实质机制内容，release 仍可入选。
 
 ### 为什么 GitHub 仓库 feed 不抓正文
 
@@ -112,13 +108,11 @@ Star 572 File tree」「Notifications You must be signed in to change…」—�
 链接型短帖会被过滤掉。`enrichHeadlineFeeds` 和 `maxEnrichPerFeed` 控制抓正文
 的开关和每个 feed 的上限，单个来源可以用 `"enrich": false` 单独关掉。
 
-`maxItemAgeDays` 默认 21，是这个窗口决定某个来源「现在有没有料」。例如 Matt
-Pocock 的 feed 最近一次更新是 2026-08-06，落在窗口之外，所以他现在不会出现在
-候选里——等他发新内容就会自动进来，不需要改配置。想放宽就调大这个值。
+`maxItemAgeDays` 默认 21。超过窗口的来源不会进入候选，新增内容也仍须通过主题
+与证据检查。时间窗口不是为了强行让某个来源轮到；没有合格内容时保持空缺。
 
-`DIGEST_MAX_CONCURRENCY`（默认 6）限制并发连接数。一次完整运行有约 150 个
-出站请求，不限并发会耗尽 socket，表现为每次随机几个 feed 报
-「socket disconnected before secure TLS connection was established」。
+`DIGEST_MAX_CONCURRENCY`（默认 6）限制并发连接数，避免抓取 feed 与正文时
+耗尽 socket。网络失败会显示诊断，不会用无关内容补位。
 
 ### 需要配置的仓库设置
 
@@ -133,10 +127,9 @@ Pocock 的 feed 最近一次更新是 2026-08-06，落在窗口之外，所以�
 
 ### X / Twitter 这一层
 
-`sources.json` 的 `xAccounts` 已经配置了 15 个账号，全部用 oembed 端点验证过
-真实存在（伪造的 handle 会返回 404）。包含五个团队官方号（`@AnthropicAI`、
-`@OpenAI`、`@xai`、`@cursor_ai`、`@GoogleDeepMind`）和十位个人账号——后三位
-`@shao__meng`、`@0xwhrrari`、`@0xCodez` 是从本仓库现有文章的引用里找出来的。
+`sources.json` 保留 6 个开发工具或专业作者账号：`@cursor_ai`、`@karpathy`、
+`@lilianweng`、`@simonw`、`@swyx`、`@mattpocockuk`。账号身份只决定从哪里
+发现材料，不提供主题豁免；X、bridge 与官方 feed 共用候选门槛。
 
 要真正拉到推文，**必须**满足下面之一：
 
@@ -156,9 +149,8 @@ Pocock 的 feed 最近一次更新是 2026-08-06，落在窗口之外，所以�
 - **回复和转推被排除**（`exclude=replies,retweets`）。所以一串推文线程只会
   拿到第一条，后续接龙因为算回复而丢失。
 
-没有 X 凭据时能拿到的内容其实已经不少：Cursor、GitHub、Meta、微软研究院、
-Hugging Face、Google 以及几位独立作者都有可用的官方 feed，Anthropic 和 xAI
-走 GitHub。真正只存在于 X 上的只有临时表态、转发和短评。
+没有 X 凭据时仍会运行官方 feed 层。是否写文章由主题与证据决定，
+不是由启用了多少来源或当天抓到了多少条目决定。
 
 ### 本地运行
 
@@ -178,12 +170,18 @@ DEEPSEEK_API_KEY=sk-... node scripts/ingest/run.ts --limit=3 --draft
 
 ```jsonc
 {
-  "xAccounts": [{ "handle": "AnthropicAI", "team": "Anthropic" }],
-  "feeds": [{ "url": "https://openai.com/news/rss.xml", "team": "OpenAI" }],
+  "xAccounts": [{ "handle": "mattpocockuk", "team": "Matt Pocock" }],
+  "feeds": [{
+    "url": "https://github.com/openai/openai-agents-python/releases.atom",
+    "team": "OpenAI",
+    "kind": "release",
+    "author": "OpenAI",
+    "enrich": false
+  }],
   "selection": {
-    "maxArticlesPerRun": 1,   // 每次生成几篇
-    "minSourceChars": 600,    // 正文短于此长度直接跳过
-    "priorityTeams": ["Anthropic", "OpenAI", "xAI", "Google DeepMind"],
+    "maxArticlesPerRun": 1,   // 本次最多送审几篇，不保证一定产出
+    "minSourceChars": 1200,  // 正文短于此长度直接跳过
+    "priorityTeams": ["Anthropic", "OpenAI", "Cursor"],
     "maxItemAgeDays": 21
   }
 }
@@ -227,14 +225,19 @@ layer: 执行层 | 工具与权限 | 状态 | 隔离
 
 规范里固定了几件事——不编造数字与引语、不重复来源信息（标题、作者、链接、
 期号由流水线注入）、不写「在当今快速发展的 AI 领域」这类填充、结论必须有
-立场、中文按中文写。模型只负责 `titleParts`、`description`、`tags` 和
-`body`；完整标题 `title` 由 `titleParts` 无分隔拼接得到，标点和词间空格
-必须留在分行内容里，不再让模型独立生成两份标题。期号、阅读时长、章节锚点
-由脚本计算，来源字段由抓取结果填入，模型没有机会编造它们。
+立场、中文按中文写。合格来源的模型输出只负责 `titleParts`、`description`、
+`tags` 和 `body`；完整标题 `title` 由 `titleParts` 无分隔拼接得到，标点和词间
+空格必须留在分行内容里。期号、阅读时长、章节锚点由脚本计算，
+来源字段由抓取结果填入，模型没有机会编造它们。
 
-产出先过 zod 校验，派生标题并校验总长度，再走一轮契约检查（小节数量、标签
-数量与停用词、感叹号与 emoji、flow 图）。任一环节不过就把问题回灌给模型
-重试一次，第二次仍不过则整篇放弃并让工作流失败。
+不相关或证据不足时，模型应返回 `{"skip": true, "reason": "具体原因"}`。
+合法拒稿立即结束该条处理，不会要求模型重写成文章；来源记入已处理账本，
+但不更新团队覆盖记录。拒稿与文章字段混在一起、缺少原因或错误的 `skip` 值
+都不能产生可发布文章。
+
+文章产出先过 zod 校验，再走小节、标签、语气与 flow 图检查。
+格式或文章契约失败仍沿用最多一次修正；合法拒稿没有额外重试。
+`pnpm digest:dry` 只验证抓取与主题预筛，不调用模型，也不宣称通过了编辑准入。
 
 ### 发布与回滚
 
@@ -242,6 +245,11 @@ layer: 执行层 | 工具与权限 | 状态 | 隔离
 不合规、路由冲突、锚点错位都会在提交之前暴露。要改成人工审阅，把工作流里的
 `git push` 换成 `gh pr create`；要临时改成只生成草稿，手动触发工作流时把
 `draft` 勾上（frontmatter 里 `draft: true` 的文章不会出现在站点上）。
+
+只有拒稿而没有新文章时，工作流只提交已处理账本，不产生新刊物。
+同批其他候选失败且没有新文章时，账本专用步骤仍可提交 `state.json`，
+但保留原失败结果；它不会暂存任何文章。有新文章时仍必须通过构建后才提交。
+本次选题规则只约束后续自动采集，不自动删除或下架历史文章。
 
 ## 设计检查
 

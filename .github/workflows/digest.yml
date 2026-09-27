@@ -70,7 +70,7 @@ jobs:
           DIGEST_BRIDGE_TEMPLATE: ${{ vars.DIGEST_BRIDGE_TEMPLATE }}
 
       # A malformed article must never reach main, so the whole site is rebuilt
-      # before anything is committed.
+      # before any article is committed.
       - name: Verify the site still builds
         if: steps.digest.outputs.created == 'true'
         run: pnpm build
@@ -78,7 +78,7 @@ jobs:
           VITE_BASE_PATH: /${{ github.event.repository.name }}/
           SITE_URL: https://${{ github.repository_owner }}.github.io
 
-      - name: Commit the new article
+      - name: Commit new articles
         if: steps.digest.outputs.created == 'true'
         run: |
           git config user.name "github-actions[bot]"
@@ -89,4 +89,19 @@ jobs:
             exit 0
           fi
           git commit -m "content: daily digest $(date -u +%Y-%m-%d)"
+          git push
+
+      # A rejected source must stay seen even if another review in the batch
+      # failed. No article is staged here, and the earlier failure stays failed.
+      - name: Commit editorial decisions without articles
+        if: ${{ !cancelled() && steps.digest.outputs.created == 'false' && steps.digest.outputs.state_changed == 'true' }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add scripts/ingest/state.json
+          if git diff --cached --quiet; then
+            echo "nothing staged"
+            exit 0
+          fi
+          git commit -m "chore: record digest editorial decisions"
           git push

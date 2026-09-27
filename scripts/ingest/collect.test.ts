@@ -155,13 +155,228 @@ function item(overrides: Partial<SourceItem> & { kind: SourceKind; team: string 
     id: `https://example.com/${overrides.kind}/${overrides.team}/${overrides.publishedAt ?? "2026-09-09"}`,
     origin: "feed",
     author: "Someone",
-    title: "A title",
+    title: "Reliable tool execution in coding agents",
     url: "https://example.com/post",
     publishedAt: "2026-09-09",
-    text: "x".repeat(500),
+    text: "A coding agent records each tool call before execution and stores its result in a checkpoint. " +
+      "The execution loop resumes from that checkpoint after interruption instead of applying the same edit twice. " +
+      "A sandbox limits filesystem access, and permission checks require approval before a tool can write outside the workspace. " +
+      "Trajectory replay evaluates whether resumed runs preserve the same final state.",
     ...overrides,
   } as SourceItem;
 }
+
+describe("selectCandidates topic eligibility", () => {
+  // Isolate relevance from the separate source-length contract below.
+  const topicConfig = { ...config, selection: { ...config.selection, minSourceChars: 0 } };
+
+  it("does not let unrelated uncovered teams displace a relevant covered team", () => {
+    const relevant = item({ kind: "release", team: "Anthropic", id: "agent-release" });
+    const unrelated = item({
+      kind: "news",
+      team: "OpenAI",
+      id: "consumer-launch",
+      title: "A new voice experience",
+      text: "Our AI voice model offers natural conversations for everyone. " +
+        "The consumer application is available in more countries with a redesigned subscription plan.",
+    });
+
+    assert.deepEqual(
+      selectCandidates([unrelated, relevant], config, new Set(), now, ["Anthropic"])
+        .map((candidate) => candidate.id),
+      ["agent-release"],
+    );
+  });
+
+  const unrelatedSources = [
+    {
+      title: "A more accurate AI weather forecast",
+      text: "The forecast model predicts rainfall and hurricane paths from satellite observations. " +
+        "Evaluation compares weather predictions against measurements across cloud regions.",
+    },
+    {
+      title: "An expressive speech model",
+      text: "The voice model supports more languages and emotional speech synthesis. " +
+        "Evaluation measures audio quality and listener preferences, not software execution.",
+    },
+    {
+      title: "Join our agentic AI launch event",
+      text: "Meet the founders, hear our funding announcement, and see the new subscription plans. " +
+        "Tickets include keynote sessions, sponsor booths, networking, and product demonstrations.",
+    },
+    {
+      title: "A new cloud region for AI",
+      text: "The cloud region adds capacity for LLM inference and reduces latency for local customers. " +
+        "Permission checks and sandbox isolation protect hosted applications.",
+    },
+    {
+      title: "Consumer AI comes to your phone",
+      text: "The assistant app now includes photo filters, shopping recommendations, and a voice interface. " +
+        "Customers can subscribe to an annual plan or try the free mobile experience.",
+    },
+    {
+      title: "LLM inference engineering",
+      text: "We compare evaluation results across context windows and improve batch throughput. " +
+        "This model-serving article does not describe an autonomous software system.",
+    },
+  ];
+
+  for (const source of unrelatedSources) {
+    it(`rejects general news: ${source.title}`, () => {
+      const candidate = item({ kind: "news", team: "OpenAI", ...source });
+      assert.deepEqual(selectCandidates([candidate], topicConfig, new Set(), now), []);
+    });
+  }
+
+  const ambiguousSources = [
+    {
+      title: "HTTP User-Agent compatibility",
+      text: "The User-Agent header selects the browser compatibility profile. " +
+        "The agent string is preserved in execution traces and regression tests run inside a sandbox.",
+    },
+    {
+      title: "Monitoring agent checkpoints",
+      text: "The monitoring agent collects CPU metrics and writes checkpoints before shutdown. " +
+        "The agent uses permission checks to isolate its host access and resumes metric uploads on restart.",
+    },
+    {
+      title: "Travel agents get a booking portal",
+      text: "Travel agents process reservations through the new portal. Each agent can use the training " +
+        "sandbox, while permission checks keep customer records visible only to the assigned office.",
+    },
+    {
+      title: "Agentless monitoring with MCPatch",
+      text: "Agentless instrumentation records execution traces and runs regression tests in a sandbox. " +
+        "MCPatch is the patch filename, not a protocol for tool invocation.",
+    },
+    {
+      title: "Clipped instrumentation description",
+      text: "Execution traces and sandbox isolation protect our infrastructure. ".padEnd(595, " ") +
+        "agentless monitoring records host activity without installing a daemon. ".repeat(12),
+    },
+    {
+      title: "Reagents improve laboratory automation",
+      text: "Reagents are tracked through execution traces and checkpoints. " +
+        "Evaluation compares the chemical yield across laboratory batches.",
+    },
+    {
+      title: "Source links: https://example.com/agents",
+      text: "The service records execution traces and stores checkpoints in a sandbox. " +
+        "Implementation notes are linked at https://example.com/agentic/mcp/tool-calls.",
+    },
+    {
+      title: "New model-serving capacity",
+      text: "Our inference cluster increases GPU availability and supports longer context windows. " +
+        "Permission checks isolate the tenants and a sandbox protects each deployment. " +
+        "This might also be useful for AI agents.",
+    },
+    {
+      title: "Regional infrastructure update",
+      text: "The region expands compute capacity and reduces network latency for hosted applications. ".repeat(10) +
+        "In related news, AI agents use tool calls and sandbox isolation.",
+    },
+    {
+      title: "The future of AI agents",
+      text: "AI agents will transform every industry and improve the customer experience. " +
+        "Visit our event to discover product plans and hear what executives expect next year.",
+    },
+  ];
+
+  for (const source of ambiguousSources) {
+    it(`rejects misleading signals: ${source.title}`, () => {
+      const candidate = item({
+        kind: "news",
+        team: "Simon Willison",
+        url: "https://example.com/agents/tool-calls",
+        ...source,
+      });
+      assert.deepEqual(selectCandidates([candidate], topicConfig, new Set(), now), []);
+    });
+  }
+
+  const relevantSources = [
+    {
+      title: "Making agents resumable",
+      text: "The agent execution loop persists a checkpoint before dispatching tool calls. " +
+        "After interruption, the runner replays tool results instead of repeating completed writes.",
+    },
+    {
+      title: "Context management for coding agents",
+      text: "A coding agent applies context compaction after retaining unresolved tool results. " +
+        "Memory retrieval restores earlier decisions without expanding the context window indefinitely.",
+    },
+    {
+      title: "Evaluating agentic workflows",
+      text: "Agentic workflows are scored with trajectory replay rather than final text alone. " +
+        "Evaluation checks whether each tool call obeyed the task constraints and returned a usable result.",
+    },
+    {
+      title: "MCP server permission boundaries",
+      text: "The MCP server validates tool calls before dispatch. Permission checks bind each request " +
+        "to an approved workspace, and sandbox isolation prevents writes outside that directory.",
+    },
+    {
+      title: "Containing coding agent tools",
+      text: "The coding agent dispatches tool calls inside a sandbox. Files outside the workspace " +
+        "are mounted read-only, so a generated shell command cannot overwrite the host configuration.",
+    },
+    {
+      title: "智能体执行与工具调用",
+      text: "智能体的执行循环先保存检查点，再发出工具调用。工具结果与任务状态一起持久化，" +
+        "中断恢复时复用已完成的结果，避免重复修改文件。权限检查在实际执行之前完成，不能只依赖模型承诺。",
+    },
+    {
+      title: "多智能体的上下文管理",
+      text: "多智能体协作编排不能只转发完整聊天记录。上下文压缩保留当前任务的约束，" +
+        "记忆检索恢复已经确认的决策，每次任务移交都附带可验证的执行结果。",
+    },
+    {
+      title: "智能体评测中的失败定位",
+      text: "智能体评测需要检查工具调用的中间结果。轨迹回放能区分规划错误与工具执行错误，" +
+        "回归测试验证恢复后的最终状态，而不是只判断模型是否给出了一段自然语言总结。",
+    },
+    {
+      title: "v2.1.20",
+      kind: "release" as const,
+      text: "Fixed Claude Code tool calls losing their results during context compaction. " +
+        "Permission checks now run before sandbox execution when restoring a session checkpoint.",
+    },
+    {
+      title: "0.42.0",
+      kind: "release" as const,
+      text: "Codex now restores session state before resuming the execution loop. " +
+        "Tool calls keep their original approval gates after a checkpoint is loaded.",
+    },
+    {
+      title: "v0.9.0",
+      kind: "release" as const,
+      text: "Fixed MCP client tool results being lost during handoffs between agents. " +
+        "Regression tests cover interrupted runs, and permission checks apply to resumed tool calls.",
+    },
+    {
+      title: "User-Agent headers in a coding agent browser tool",
+      text: "The coding agent sets the User-Agent header during browser tool calls. " +
+        "Sandbox isolation and permission checks still restrict which sites the tool can access.",
+    },
+  ];
+
+  for (const source of relevantSources) {
+    it(`keeps engineering content: ${source.title}`, () => {
+      const candidate = item({ kind: "news", team: "Independent", ...source });
+      assert.deepEqual(
+        selectCandidates([candidate], topicConfig, new Set(), now).map((entry) => entry.id),
+        [candidate.id],
+      );
+    });
+  }
+
+  it("returns no candidates when every source is off-topic", () => {
+    const candidates = unrelatedSources.map((source, index) =>
+      item({ kind: "news", team: `Uncovered ${index}`, id: `unrelated-${index}`, ...source }),
+    );
+    assert.deepEqual(selectCandidates(candidates, topicConfig, new Set(), now, ["Anthropic"]), []);
+  });
+});
 
 describe("selectCandidates", () => {
   it("ranks a written article above a raw commit stream", () => {
@@ -298,12 +513,11 @@ describe("selectCandidates", () => {
 
   it("reaches every team in the pool within one rotation", () => {
     const teams = ["Anthropic", "OpenAI", "xAI", "Cursor", "Google DeepMind", "Meta Engineering"];
-    const pool = teams.map((team, index) =>
+    const pool = teams.map((team) =>
       item({
         kind: team === "Anthropic" ? "release" : "news",
         team,
         id: team,
-        text: "x".repeat(2000 + index),
       }),
     );
 

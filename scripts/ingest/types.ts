@@ -1,8 +1,8 @@
 export type ItemOrigin = "x-api" | "bridge" | "feed";
 
 /**
- * What kind of thing the source publishes. Order matters: it is the primary
- * sort key, so a written article always outranks a raw commit stream.
+ * What kind of thing the source publishes. Among topic-eligible candidates,
+ * kind ranks after team coverage, then before team priority and recency.
  */
 export type SourceKind = "news" | "release" | "community" | "commits";
 
@@ -70,7 +70,7 @@ export interface DigestState {
   seen: string[];
   /**
    * Teams already covered, most recent first. Drives least-recently-covered
-   * scheduling so no vendor is starved by a more prolific one.
+   * scheduling among topic-eligible sources; it never overrides relevance.
    */
   recentTeams: string[];
 }

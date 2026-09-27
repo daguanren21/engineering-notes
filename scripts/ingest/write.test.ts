@@ -131,9 +131,98 @@ describe("authorArticle", () => {
     const stub = stubCompletion([goodResponse]);
     const result = await authorArticle(item, { stopWords: ["AI"] });
 
+    assert.ok("article" in result);
     assert.equal(result.attempts, 1);
     assert.equal(result.article.title, goodArticle.title);
     assert.equal(stub.calls, 1);
+  });
+
+  it("stops on a valid editorial rejection without forcing an article repair", async () => {
+    const reason = "原文只有云区域上线信息，没有 Agent 执行或工具调用机制。";
+    const stub = stubCompletion([{ skip: true, reason: ` ${reason} ` }, goodResponse]);
+    const result = await authorArticle(item, { stopWords: ["AI"] });
+
+    assert.deepEqual(result, { skipReason: reason, attempts: 1 });
+    assert.equal("article" in result, false);
+    assert.equal(stub.calls, 1);
+  });
+
+  for (const [label, response] of [
+    ["a missing reason", { skip: true }],
+    ["an empty reason", { skip: true, reason: "" }],
+    ["a whitespace-only reason", { skip: true, reason: " \n\t " }],
+    ["a non-string reason", { skip: true, reason: 42 }],
+    ["a false skip flag", { skip: false, reason: "没有 Agent 工程证据。" }],
+    ["a string skip flag", { skip: "true", reason: "没有 Agent 工程证据。" }],
+    ["a missing skip flag", { reason: "没有 Agent 工程证据。" }],
+    ["an extra field", { skip: true, reason: "没有 Agent 工程证据。", extra: "value" }],
+  ] as const) {
+    it(`rejects ${label} within the existing two-attempt limit`, async () => {
+      const stub = stubCompletion([response]);
+
+      await assert.rejects(
+        () => authorArticle(item, { stopWords: ["AI"] }),
+        /failed validation twice/,
+      );
+      assert.equal(stub.calls, 2);
+    });
+  }
+
+  for (const [label, response] of [
+    ["rejection with article fields", {
+      skip: true, reason: "没有 Agent 工程证据。", ...goodResponse,
+    }],
+    ["false skip with article fields", { skip: false, ...goodResponse }],
+    ["article with rejection reason", { reason: "没有 Agent 工程证据。", ...goodResponse }],
+    ["rejection with a nested article", {
+      skip: true, reason: "没有 Agent 工程证据。", article: goodResponse,
+    }],
+  ] as const) {
+    it(`never accepts a mixed ${label} as a storable article`, async () => {
+      const stub = stubCompletion([response]);
+
+      await assert.rejects(
+        () => authorArticle(item, { stopWords: ["AI"] }),
+        /failed validation twice/,
+      );
+      assert.equal(stub.calls, 2);
+    });
+  }
+
+  it("can repair a malformed rejection into a valid rejection", async () => {
+    const reason = "原文没有说明 Agent 执行机制。";
+    const stub = stubCompletion([{ skip: true }, { skip: true, reason }]);
+    const result = await authorArticle(item, { stopWords: ["AI"] });
+
+    assert.deepEqual(result, { skipReason: reason, attempts: 2 });
+    assert.equal(stub.calls, 2);
+  });
+
+  it("can replace a mixed response with a separate compliant article", async () => {
+    const mixed = {
+      ...goodResponse,
+      titleParts: ["不能采用的", "混合响应"],
+      skip: false,
+    };
+    const stub = stubCompletion([mixed, goodResponse]);
+    const result = await authorArticle(item, { stopWords: ["AI"] });
+
+    assert.ok("article" in result);
+    assert.equal(result.article.title, goodArticle.title);
+    assert.equal(result.attempts, 2);
+    assert.equal(stub.calls, 2);
+  });
+
+  it("allows editorial rejection after an article review failure", async () => {
+    const reason = "补充图表也无法弥补原文缺少 Agent 机制证据。";
+    const stub = stubCompletion([
+      { ...goodResponse, tags: ["AI"] },
+      { skip: true, reason },
+    ]);
+    const result = await authorArticle(item, { stopWords: ["AI"] });
+
+    assert.deepEqual(result, { skipReason: reason, attempts: 2 });
+    assert.equal(stub.calls, 2);
   });
 
   it("parses a response whose body contains braces and a fence", async () => {
@@ -147,6 +236,7 @@ describe("authorArticle", () => {
 
     const result = await authorArticle(item, { stopWords: ["AI"] });
 
+    assert.ok("article" in result);
     assert.equal(result.attempts, 1);
     assert.match(result.article.body, /retries: 3/);
   });
@@ -159,6 +249,7 @@ describe("authorArticle", () => {
     };
     stubCompletion([response]);
     const result = await authorArticle(item, { stopWords: ["AI"] });
+    assert.ok("article" in result);
     const stored = await storeArticle(result.article, item, { draft: true });
     const frontmatter = ArticleFrontmatterSchema.parse(
       matter(await readFile(stored.file, "utf8")).data,
@@ -176,6 +267,7 @@ describe("authorArticle", () => {
     }]);
     const result = await authorArticle(item, { stopWords: ["AI"] });
 
+    assert.ok("article" in result);
     assert.equal(result.article.title, "GPT-6 Astra：Agent Harness 的恢复边界");
     assert.deepEqual(result.article.titleParts, [
       "GPT-6 Astra：", "Agent Harness ", "的恢复边界",
@@ -252,6 +344,7 @@ describe("authorArticle", () => {
     const stub = stubCompletion([broken, goodResponse]);
     const result = await authorArticle(item, { stopWords: ["AI"] });
 
+    assert.ok("article" in result);
     assert.equal(result.attempts, 2);
     assert.equal(stub.calls, 2);
   });
@@ -261,6 +354,7 @@ describe("authorArticle", () => {
     const stub = stubCompletion([truncated, goodResponse]);
     const result = await authorArticle(item, { stopWords: ["AI"] });
 
+    assert.ok("article" in result);
     assert.equal(result.attempts, 2);
     assert.equal(stub.calls, 2);
   });

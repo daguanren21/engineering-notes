@@ -177,16 +177,55 @@ function dedupe(items: SourceItem[]): SourceItem[] {
   return [...byUrl.values()];
 }
 
+// These are topic signals, not a semantic verdict. The writer must still reject
+// sources whose actual subject is not AI Agent engineering.
+const genericAgentContext = /\b(?:agents?|subagents?)\b/iu;
+const explicitAgentContext =
+  /\b(?:(?:ai|llm|coding|code)[ -]agents?|agentic|mcp|model context protocol|claude code|codex)\b|智能体|编码代理|编程代理/iu;
+const nonLlmAgentContext =
+  /\b(?:user|monitoring|telemetry|observability|travel|booking|insurance|real[ -]estate)[ -]agents?\b/iu;
+const engineeringMechanisms = [
+  /\b(?:tool[ -](?:calls?|calling|use|results?|execution)|function[ -]call(?:s|ing)?|mcp[ -](?:servers?|clients?|tools?|transport))\b|工具调用|工具执行|工具结果|函数调用/iu,
+  /\b(?:agent[ -](?:loops?|execution|runs?)|execution[ -](?:loops?|traces?)|orchestrat(?:ion|ing)|handoffs?|subagents?|checkpoints?|task[ -](?:planning|decomposition))\b|执行循环|执行轨迹|任务分解|任务规划|多智能体|协作编排|检查点/iu,
+  /\b(?:context[ -](?:windows?|management|compaction|compression|engineering)|memory[ -](?:retrieval|management|persistence)|session[ -](?:memory|state)|prompt[ -](?:caching|injection))\b|上下文(?:窗口|管理|压缩|工程)|记忆(?:检索|管理|持久化)|会话状态|提示词缓存|提示注入/iu,
+  /\b(?:evals?|evaluations?|trajectory[ -](?:replay|scoring)|regression[ -](?:tests?|testing)|failure[ -]recovery|retry[ -](?:budgets?|polic(?:y|ies)))\b|评测|轨迹回放|回归测试|故障恢复|重试预算/iu,
+  /\b(?:sandbox(?:es|ing)?|permission[ -](?:checks?|boundaries|prompts?|polic(?:y|ies))|approval[ -](?:gates?|flows?)|least[ -]privilege)\b|沙箱|权限(?:检查|边界|控制)|人工审批|最小权限/iu,
+];
+
+function topicText(text: string): string {
+  return text.replace(/(?:https?:\/\/|www\.)\S+/giu, " ");
+}
+
+function isAgentEngineering(item: SourceItem): boolean {
+  const title = topicText(item.title);
+  const body = topicText(item.text);
+  // A title or early body must establish the subject. A passing mention near the
+  // end cannot qualify an otherwise unrelated article. Body focus also permits
+  // release feeds whose titles contain only a version number.
+  const leadEnd = Math.min(600, Math.floor(body.length / 2));
+  let lead = body.slice(0, leadEnd);
+  // Do not turn a clipped word such as "agentless" into the signal "agent".
+  if (/\w/u.test(body.charAt(leadEnd))) lead = lead.replace(/\w+$/u, "");
+
+  if (!explicitAgentContext.test(title) && !explicitAgentContext.test(lead)) {
+    // Generic "agent" also names HTTP headers, daemons, and human intermediaries.
+    if (nonLlmAgentContext.test(title) || nonLlmAgentContext.test(lead)) return false;
+    if (!genericAgentContext.test(title) && !genericAgentContext.test(lead)) return false;
+  }
+
+  // Require complementary, concrete mechanisms in the source body, never just
+  // a brand, generic AI/LLM vocabulary, source attribution, or a link target.
+  let mechanisms = 0;
+  for (const signal of engineeringMechanisms) {
+    if (signal.test(body) && ++mechanisms >= 2) return true;
+  }
+  return false;
+}
+
 /**
- * Least-recently-covered scheduling, then kind, then team priority, then
- * recency.
- *
- * Coverage leads because kind-weighting alone starves whole teams: Anthropic
- * publishes no news feed at all, so with any kind penalty its release notes sit
- * permanently below every blog post ever written. Ranking teams by how long ago
- * they were covered guarantees each one its turn, while kind still orders what
- * a team offers — its article before its commit stream — and priority teams win
- * ties against the wider pool.
+ * Topic eligibility comes before scheduling. Among eligible sources, rank by
+ * least-recently-covered team, then kind, team priority, and recency. Rotation
+ * cannot rescue an off-topic source or require an article when none qualifies.
  */
 export function selectCandidates(
   items: SourceItem[],
@@ -224,6 +263,7 @@ export function selectCandidates(
     .filter((item) => !seen.has(item.id))
     .filter((item) => item.text.length >= minSourceChars)
     .filter((item) => item.publishedAt >= cutoff)
+    .filter(isAgentEngineering)
     .sort((left, right) => {
       const difference = score(left) - score(right);
       return difference !== 0 ? difference : right.publishedAt.localeCompare(left.publishedAt);
