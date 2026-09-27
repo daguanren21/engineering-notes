@@ -15,9 +15,11 @@
     "https://cursor.com/changelog/projects",
     "https://deepmind.google/blog/say-hello-to-gemini-38-text-to-speech/",
     "https://simonwillison.net/2026/Sep/24/commit-rewriter/",
-    "https://github.blog/ai-and-ml/github-copilot/github-copilot-app-for-beginners-how-to-build-custom-workflows-with-canvases/"
+    "https://github.blog/ai-and-ml/github-copilot/github-copilot-app-for-beginners-how-to-build-custom-workflows-with-canvases/",
+    "https://blog.google/innovation-and-ai/technology/research/google-beam-expansion/"
   ],
   "recentTeams": [
+    "Google",
     "GitHub",
     "Simon Willison",
     "Google DeepMind",
@@ -28,7 +30,6 @@
     "Ethan Mollick",
     "Microsoft Research",
     "Meta Engineering",
-    "Hugging Face",
-    "Google"
+    "Hugging Face"
   ]
 }
