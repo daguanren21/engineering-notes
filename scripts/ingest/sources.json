@@ -1,6 +1,6 @@
 {
   "$comment": [
-    "Existing, previously probed Agent/developer-tool and specialist-author sources.",
+    "Verified Agent/developer-tool and specialist-author sources, including explainers.",
     "AI Agent engineering relevance is required before any team rotation: the title",
     "or early source body must establish Agent context, with concrete mechanisms in",
     "the body. Neither a known author nor a product source bypasses this gate.",
@@ -9,6 +9,8 @@
     "",
     "Eligible sources rank by least-recently-covered team, then kind",
     "(news > release > community > commits), team priority, and recency.",
+    "Claude Code, Codex, oh-my-pi, Harness, MCP, ACP and Agent Skills explanations",
+    "are in scope when the source supplies concrete mechanisms, not just keywords.",
     "",
     "`author` overrides the feed's own attribution. It is set where the feed reports a",
     "username or bot instead of a name, which is every GitHub-hosted feed.",
@@ -37,6 +39,10 @@
     {
       "handle": "swyx",
       "team": "Independent"
+    },
+    {
+      "handle": "poteto",
+      "team": "Lauren Tan"
     },
     {
       "handle": "mattpocockuk",
@@ -84,6 +90,24 @@
       "kind": "release",
       "author": "OpenAI",
       "enrich": false
+    },
+    {
+      "url": "https://github.com/can1357/oh-my-pi/releases.atom",
+      "team": "oh-my-pi",
+      "kind": "release",
+      "author": "oh-my-pi",
+      "enrich": false
+    },
+    {
+      "url": "https://blog.modelcontextprotocol.io/index.xml",
+      "team": "Model Context Protocol",
+      "kind": "news",
+      "enrich": false
+    },
+    {
+      "url": "https://zed.dev/blog.rss",
+      "team": "Zed",
+      "kind": "news"
     },
     {
       "url": "https://forum.cursor.com/latest.rss",

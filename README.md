@@ -64,15 +64,25 @@ pnpm test:ingest
 **先判断主题，再考虑来源覆盖；不以品牌、发布时间或日更数量替代相关性。**
 
 候选先经过已处理、正文长度、时间窗口和主题过滤。主题门槛只读取标题与正文：
-标题或正文前部需要建立 Agent、coding agent、agentic、MCP 或智能体语境，
-正文还要涉及至少两类具体机制——工具调用、执行编排、上下文记忆、评测恢复、
-沙箱权限。团队名和 URL 不作为放行依据；普通 AI/LLM、HTTP User-Agent、
-监控代理或文末顺带提到 Agent 都不能单独使文章入选。
+标题或正文前部需要建立明确的 Agent 工程语境，正文还要提供相互补充的机制证据。
+专项教程可以只深入一个协议或 Skills：传输与能力协商、元数据与按需加载，
+都能提供具体证据，不要求文章横跨两个宽泛的工程领域。
 
-这是偏重精度的词法预筛，不是语义证明。它可能漏掉只深入一种机制或较晚才说明主题的
-好文章；不得为凑稿放宽门槛。模型随后还要判断原文主体与证据是否足以支撑
-AI Agent 工程解读。通用天气/语音模型、消费产品、活动、地区扩张和泛基础设施新闻
-不能被强行改写成 Agent 经验。
+| 收录方向 | 需要讲清的机制示例 |
+|---|---|
+| Claude Code、Codex、oh-my-pi（OMP） | 工具、子 Agent、权限、沙箱、上下文或恢复机制；不限于版本更新 |
+| Harness、AI Agent | 模型外围的执行循环、工具编排、状态、约束与验收 |
+| MCP（Model Context Protocol） | 工具与资源接口、传输、初始化、能力协商、授权边界 |
+| ACP（Agent Client Protocol） | 编辑器与 Agent 的协商、会话、消息、权限请求与取消 |
+| Agent Skills | `SKILL.md`、元数据、发现与触发、按需加载和上下文成本 |
+
+团队名、作者和 URL 不作为放行依据；普通 AI/LLM、HTTP User-Agent、监控代理、
+通用技能培训、普通测试 harness、无关协议缩写或文末顺带提到 Agent，不能单独使文章入选。
+`OMP`、`ACP` 不作为独立的语境信号：需要全名或正文前部的 Agent 语境消歧，
+避免把 OpenMP 并行运行时或其他协议误当作目标项目。
+这是偏重精度的词法预筛，不是语义证明，仍可能漏掉使用不同表述的好文章。
+模型随后还要判断原文主体与证据是否足以支撑工程解读，不得为凑稿放宽准入，
+也不能把通用天气/语音模型、消费产品、活动、地区扩张和泛基础设施新闻强行改写成 Agent 经验。
 
 只有通过主题预筛的候选才按「最久没覆盖的团队 → kind → 团队优先级 → 时间」排序。
 `kind` 默认顺序为 `news > release > community > commits`，可在
@@ -80,19 +90,28 @@ AI Agent 工程解读。通用天气/语音模型、消费产品、活动、地�
 
 ### 默认来源
 
-`scripts/ingest/sources.json` 保留已有的 10 个 Agent/开发工具与专业作者 feed，
-没有新增未经验证的地址。通用厂商新闻、普通 model SDK、泛研究/基础设施和通用
-commit 流已移出默认配置。
+`scripts/ingest/sources.json` 配置 13 个 Agent/开发工具与专业作者 feed：
+保留原有 10 个来源，补入已验证能返回 XML 条目的 OMP、MCP 官方博客与 Zed 工程博客。
+通用厂商新闻、普通 model SDK、泛研究/基础设施和通用 commit 流仍不在默认配置中。
 
 | 来源 | 用途与边界 |
 |---|---|
 | Cursor changelog / 社区 | 开发工具机制与使用问题，仍须通过主题门槛 |
 | Claude Code / Codex releases | coding agent 的执行、工具、权限与恢复变化 |
 | OpenAI Agents SDK releases | Agent 运行与编排接口，不再收集普通模型 SDK 更新 |
+| oh-my-pi releases | OMP 的 Harness、上下文、工具与子 Agent 机制；使用发布正文，不抓 GitHub 页面框架 |
+| MCP 官方博客 | 协议与工具基础设施讲解；使用 feed 内嵌全文，治理或推广内容仍须筛选 |
+| Zed 工程博客 | ACP、编辑器与 Agent 集成、权限与沙箱；短摘要按既有上限补取正文 |
 | Karpathy / Lilian Weng / Simon Willison | 专业作者来源，不因作者身份自动合格 |
 | aihero / Matt Pocock skills releases | Agent 开发与 skills 实践；短 feed 可按配置补正文 |
 
 版本号标题不直接排除：如果正文前部建立 Agent 语境且有实质机制内容，release 仍可入选。
+
+Claude Code、Codex 的机制讲解同时从专业作者 feed 进入，不只依赖 releases。
+未验证到 Anthropic engineering 的官方 RSS，不能用猜测的地址或泛新闻 feed 冒充；
+也不因为作者相关，就加入只有多年以前文章的个人博客。
+这些配置不等于全站文档爬虫或历史教程回填：21 天时间窗口、1200 字符正文门槛、
+每源条目数与补全文次数限制继续生效，没有合格候选仍不发文。
 
 ### 为什么 GitHub 仓库 feed 不抓正文
 
@@ -127,9 +146,10 @@ Star 572 File tree」「Notifications You must be signed in to change…」—�
 
 ### X / Twitter 这一层
 
-`sources.json` 保留 6 个开发工具或专业作者账号：`@cursor_ai`、`@karpathy`、
-`@lilianweng`、`@simonw`、`@swyx`、`@mattpocockuk`。账号身份只决定从哪里
-发现材料，不提供主题豁免；X、bridge 与官方 feed 共用候选门槛。
+`sources.json` 配置 7 个开发工具或专业作者账号：`@cursor_ai`、`@karpathy`、
+`@lilianweng`、`@simonw`、`@swyx`、`@poteto`、`@mattpocockuk`。
+`@poteto` 的 pstack 与 Agent 工作流内容属于候选，个人动态、玩笑和推广不因此自动入选。
+账号身份只决定从哪里发现材料，不提供主题豁免；X、bridge 与官方 feed 共用候选门槛。
 
 要真正拉到推文，**必须**满足下面之一：
 
@@ -142,10 +162,9 @@ Star 572 File tree」「Notifications You must be signed in to change…」—�
 
 启用后有两点行为需要知道：
 
-- **只有长推文（long-form / note_tweet）才可能被选中。** 抓取时会优先取
-  `note_tweet.text`，普通推文只有 280 字符，过不了 `minSourceChars: 1200`
-  这一关——280 字符撑不起一篇 1200–2500 字的解读。想让短推文也进入候选，把
-  `minSourceChars` 调低即可，但代价是模型要为了凑篇幅而注水。
+- **正文仍须满足 `minSourceChars: 1200`。** 抓取时优先取长推文的
+  `note_tweet.text`；普通短帖、视频预告或单独一个链接不能支撑完整的机制解读。
+  配置作者不等于已经取得正文；当前流水线不自动转录视频，也不拼接回复线程。
 - **回复和转推被排除**（`exclude=replies,retweets`）。所以一串推文线程只会
   拿到第一条，后续接龙因为算回复而丢失。
 

@@ -23,9 +23,17 @@ The source is evidence. Your article is the judgement drawn from it.
 ## Editorial admission comes first
 
 The source's main subject must provide concrete, reusable evidence about AI
-Agent engineering: execution loops, tool calling or MCP, context and memory,
-multi-agent coordination and orchestration, evaluation and reliability,
+Agent engineering: Harness and execution loops, tool calling and protocols,
+context and memory, multi-agent coordination, evaluation and reliability,
 sandboxing and permissions, or specific coding-agent mechanisms.
+
+Include substantive explanations, tutorials, and source walkthroughs of Claude
+Code, Codex, and oh-my-pi (OMP), not only their release announcements. In-scope
+subjects include AI Agent/Harness design, MCP (Model Context Protocol), ACP
+(Agent Client Protocol), and Agent Skills such as SKILL.md-based discovery,
+activation, and progressive disclosure. A focused protocol or skill guide can
+provide enough evidence through its interfaces, lifecycle, and constraints;
+it does not need to cover two unrelated areas of Agent engineering.
 
 Look for how an Agent system works: interfaces, state transitions, constraints,
 failure modes, evaluation methods, or implementation trade-offs. An announcement
@@ -37,6 +45,12 @@ regions, and generic infrastructure unless the source's main body actually
 provides the Agent engineering evidence above. A vendor's identity, the words
 "AI" or "LLM", an isolated mention of "agent", or a closing paragraph speculating
 about Agent applications does not establish relevance.
+
+Generic professional skills, ordinary test harnesses, and unrelated uses of
+protocol acronyms do not qualify. A tutorial label or a known author's name
+cannot replace mechanism evidence. Short social posts, video announcements,
+and link-only posts without enough source text must not be expanded into
+imagined implementation details.
 
 When the topic is outside scope or the supplied evidence is insufficient,
 return the rejection JSON below with a specific reason. Never manufacture an

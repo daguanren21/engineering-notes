@@ -280,6 +280,88 @@ describe("selectCandidates topic eligibility", () => {
       text: "AI agents will transform every industry and improve the customer experience. " +
         "Visit our event to discover product plans and hear what executives expect next year.",
     },
+    {
+      title: "A test harness for web services",
+      text: "The harness sends JSON-RPC requests over stdio and checks capability negotiation. " +
+        "Regression tests compare the responses with the expected fixtures.",
+    },
+    {
+      title: "ACP transport changes",
+      text: "ACP sends JSON-RPC over stdio after capability negotiation. " +
+        "This abbreviation alone does not identify which protocol is being described.",
+    },
+    {
+      title: "Professional skills workshop",
+      text: "The course teaches skill discovery and progressive disclosure in training materials. " +
+        "A SKILL.md file records the workshop metadata, names, and descriptions.",
+    },
+    {
+      title: "Real estate agent skills training",
+      text: "Real estate agents use SKILL.md to store training metadata. Skill discovery and " +
+        "progressive disclosure organize professional development resources for the office.",
+    },
+    {
+      title: "Monitoring agent transport",
+      text: "The monitoring agent uses JSON-RPC over stdio for capability negotiation. " +
+        "The daemon reports host metrics to a dashboard without running a language model.",
+    },
+    {
+      title: "Claude Code, Codex, and OMP subscriptions",
+      text: "The products have new prices and availability. Agent Skills, MCP, and ACP are " +
+        "listed on the event agenda alongside upcoming launch dates and discount offers.",
+    },
+    {
+      title: "MCP client transport options",
+      text: "An MCP client supports stdio, JSON-RPC, and Streamable HTTP transport. " +
+        "The MCP server offers the same transport options for each supported platform.",
+    },
+    {
+      title: "Agent Skills loading",
+      text: "Skill discovery, skill activation, and progressive disclosure are on the agenda. " +
+        "The workshop promises to explain progressive disclosure and skill activation next month.",
+    },
+    {
+      title: "Agent Skills metadata in SKILL.md",
+      text: "SKILL.md contains skill metadata. Each skill's name and description are recorded " +
+        "in SKILL.md, and the skill metadata is repeated in the course handout.",
+    },
+    {
+      title: "Agent Skills: SKILL.md metadata and progressive disclosure",
+      text: "Join our product launch to meet the team and hear the roadmap. Tickets and " +
+        "annual subscriptions are available now, with discounts for early registration.",
+    },
+    {
+      title: "Protocol links: https://example.com/oh-my-pi",
+      text: "JSON-RPC transport supports capability negotiation for the service. " +
+        "See https://example.com/agent-client-protocol and https://example.com/agent-skills.",
+    },
+    {
+      title: "MCP community resources",
+      text: "We have collected documentation at https://example.com/stdio/capability-negotiation " +
+        "and https://example.com/SKILL.md/progressive-disclosure for our next event.",
+    },
+    {
+      title: "Regional infrastructure expansion",
+      text: "New facilities add capacity for customers and improve regional availability. ".repeat(12) +
+        "Related reading: oh-my-pi uses tool calls with permission checks. " +
+        "Agent Client Protocol uses JSON-RPC and capability negotiation.",
+    },
+    {
+      title: "Professional development newsletter",
+      text: "The newsletter lists training courses and professional development resources. ".repeat(12) +
+        "Agent Skills use SKILL.md metadata and progressive disclosure for instruction loading.",
+    },
+    {
+      title: "OMPatch and oh-my-pipeline transport",
+      text: "The service uses JSON-RPC over stdio and performs capability negotiation. " +
+        "These component names are not coding-assistant project identities.",
+    },
+    {
+      title: "OMP runtime checkpointing",
+      text: "The OpenMP OMP runtime schedules shared-memory parallel work across CPU threads. " +
+        "Execution traces and checkpoints preserve work during restarts, while regression tests " +
+        "compare loop results at different thread counts.",
+    },
   ];
 
   for (const source of ambiguousSources) {
@@ -357,6 +439,62 @@ describe("selectCandidates topic eligibility", () => {
       title: "User-Agent headers in a coding agent browser tool",
       text: "The coding agent sets the User-Agent header during browser tool calls. " +
         "Sandbox isolation and permission checks still restrict which sites the tool can access.",
+    },
+    {
+      title: "Inside an AI harness",
+      text: "An AI harness wraps a model with tool calling and context management. " +
+        "The execution loop records a checkpoint before dispatch so interrupted writes can be reconciled.",
+    },
+    {
+      title: "Claude Code skill loading",
+      text: "Claude Code reads SKILL.md frontmatter for names and descriptions. Skill discovery " +
+        "exposes only metadata; progressive disclosure loads instructions after a task selects the skill.",
+    },
+    {
+      title: "Codex MCP interfaces",
+      text: "Codex starts its MCP client over stdio. After initialization, tools/list exposes " +
+        "available operations and tools/call sends arguments to one of those operations.",
+    },
+    {
+      title: "oh-my-pi 的会话恢复",
+      text: "oh-my-pi 将会话状态与检查点一起保存。执行循环先核对已保存的工具结果，" +
+        "再决定是否发出工具调用，不能把恢复聊天记录等同于重复执行外部操作。",
+    },
+    {
+      title: "Model Context Protocol initialization",
+      text: "Model Context Protocol uses JSON-RPC for capability negotiation. The client selects " +
+        "stdio or Streamable HTTP transport and correlates replies with outstanding request identifiers.",
+    },
+    {
+      title: "模型上下文协议的初始化与传输",
+      text: "模型上下文协议通过标准输入输出传递消息。初始化握手完成能力协商后，客户端才发送业务请求，" +
+        "避免在不知道服务端支持哪些操作时调用不受支持的接口。",
+    },
+    {
+      title: "ACP session lifecycle",
+      text: "Agent Client Protocol creates a session with session/new; session/prompt and " +
+        "session/cancel refer to its identifier. Permission requests pause work until the client responds.",
+    },
+    {
+      title: "Agent Client Protocol 的会话接口",
+      text: "会话创建返回独立的标识符，后续请求必须携带它。会话恢复沿用已保存的标识符，" +
+        "权限请求将操作暂停到客户端作出决定，不能把一个会话的授权用于另一个会话。",
+    },
+    {
+      title: "Agent Skills discovery",
+      text: "Agent Skills store names and descriptions in SKILL.md frontmatter. Skill discovery " +
+        "reads that metadata; progressive disclosure loads the selected instructions and referenced resources.",
+    },
+    {
+      title: "Agent Skills 的发现与激活",
+      text: "SKILL.md 的元数据记录技能名称与描述。技能发现只读取元数据，技能激活后才加载完整指令，" +
+        "渐进式披露让运行时按任务需要读取引用资源，而不是把所有资源预先塞进提示词。",
+    },
+    {
+      title: "v13.0.0",
+      kind: "release" as const,
+      text: "oh-my-pi preserves tool results across context compaction. Restoring a conversation " +
+        "retains the original operation identifiers instead of submitting completed requests a second time.",
     },
   ];
 

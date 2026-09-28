@@ -181,15 +181,21 @@ function dedupe(items: SourceItem[]): SourceItem[] {
 // sources whose actual subject is not AI Agent engineering.
 const genericAgentContext = /\b(?:agents?|subagents?)\b/iu;
 const explicitAgentContext =
-  /\b(?:(?:ai|llm|coding|code)[ -]agents?|agentic|mcp|model context protocol|claude code|codex)\b|智能体|编码代理|编程代理/iu;
+  /\b(?:(?:ai|llm|coding|code)[ -](?:agents?|harness(?:es)?)|agentic|mcp|model context protocol|agent client protocol|claude code|codex|oh-my-pi)\b|模型上下文协议|智能体|编码代理|编程代理/iu;
 const nonLlmAgentContext =
   /\b(?:user|monitoring|telemetry|observability|travel|booking|insurance|real[ -]estate)[ -]agents?\b/iu;
 const engineeringMechanisms = [
-  /\b(?:tool[ -](?:calls?|calling|use|results?|execution)|function[ -]call(?:s|ing)?|mcp[ -](?:servers?|clients?|tools?|transport))\b|工具调用|工具执行|工具结果|函数调用/iu,
-  /\b(?:agent[ -](?:loops?|execution|runs?)|execution[ -](?:loops?|traces?)|orchestrat(?:ion|ing)|handoffs?|subagents?|checkpoints?|task[ -](?:planning|decomposition))\b|执行循环|执行轨迹|任务分解|任务规划|多智能体|协作编排|检查点/iu,
+  /\b(?:tool[ -](?:calls?|calling|use|results?|execution)|function[ -]call(?:s|ing)?|mcp[ -]tools?|tools\/(?:list|call)|resources\/(?:list|read)|prompts\/(?:list|get))\b|工具调用|工具执行|工具结果|函数调用/iu,
+  /\b(?:agent[ -](?:loops?|execution|runs?)|execution[ -](?:loops?|traces?)|orchestrat(?:ion|ing)|handoffs?|subagents?|checkpoints?|task[ -](?:planning|decomposition)|session[ -](?:lifecycle|creation|resumption)|session\/(?:new|load|prompt|cancel|update))\b|执行循环|执行轨迹|任务分解|任务规划|多智能体|协作编排|检查点|会话(?:生命周期|创建|恢复)/iu,
   /\b(?:context[ -](?:windows?|management|compaction|compression|engineering)|memory[ -](?:retrieval|management|persistence)|session[ -](?:memory|state)|prompt[ -](?:caching|injection))\b|上下文(?:窗口|管理|压缩|工程)|记忆(?:检索|管理|持久化)|会话状态|提示词缓存|提示注入/iu,
   /\b(?:evals?|evaluations?|trajectory[ -](?:replay|scoring)|regression[ -](?:tests?|testing)|failure[ -]recovery|retry[ -](?:budgets?|polic(?:y|ies)))\b|评测|轨迹回放|回归测试|故障恢复|重试预算/iu,
-  /\b(?:sandbox(?:es|ing)?|permission[ -](?:checks?|boundaries|prompts?|polic(?:y|ies))|approval[ -](?:gates?|flows?)|least[ -]privilege)\b|沙箱|权限(?:检查|边界|控制)|人工审批|最小权限/iu,
+  /\b(?:sandbox(?:es|ing)?|permission[ -](?:checks?|boundaries|prompts?|polic(?:y|ies)|requests?)|approval[ -](?:gates?|flows?)|least[ -]privilege|session\/request_permission)\b|沙箱|权限(?:检查|边界|控制|请求)|人工审批|最小权限/iu,
+  // Focused guides can explain complementary interfaces within one subject.
+  // A client/server name alone is context, not a second mechanism.
+  /\b(?:stdio|streamable[ -]http|json[ -]rpc|mcp[ -]transports?)\b|标准输入输出|流式\s*HTTP/iu,
+  /\b(?:capabilit(?:y|ies)[ -]negotiation|negotiat(?:e[sd]?|ing)[ -]capabilities|initialize[ -](?:requests?|handshakes?))\b|能力协商|初始化(?:请求|握手)/iu,
+  /\b(?:skill\.md|skills?[ -](?:metadata|frontmatter))\b|技能元数据/iu,
+  /\b(?:skills?[ -](?:discovery|activation)|progressive[ -]disclosure)\b|技能(?:发现|激活|按需加载)|渐进(?:式)?披露/iu,
 ];
 
 function topicText(text: string): string {
@@ -213,8 +219,8 @@ function isAgentEngineering(item: SourceItem): boolean {
     if (!genericAgentContext.test(title) && !genericAgentContext.test(lead)) return false;
   }
 
-  // Require complementary, concrete mechanisms in the source body, never just
-  // a brand, generic AI/LLM vocabulary, source attribution, or a link target.
+  // Require complementary, concrete mechanisms in the source body, including
+  // focused protocol/skill interfaces, never just a brand or a link target.
   let mechanisms = 0;
   for (const signal of engineeringMechanisms) {
     if (signal.test(body) && ++mechanisms >= 2) return true;
