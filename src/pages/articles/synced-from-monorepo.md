@@ -16,7 +16,7 @@ tags:
   - 工程实践
   - 可靠性
 readingMinutes: 9
-issue: 24
+issue: 18
 draft: false
 sections:
   - id: 这份清单本身就是一份架构图

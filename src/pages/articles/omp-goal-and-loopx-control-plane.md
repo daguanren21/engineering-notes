@@ -14,7 +14,7 @@ tags:
   - 执行循环
   - 状态恢复
 readingMinutes: 12
-issue: 30
+issue: 21
 draft: false
 sections:
   - id: "持续执行不能替代完成判定"

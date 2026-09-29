@@ -15,7 +15,7 @@ tags:
   - 系统设计
   - 可靠性
 readingMinutes: 3
-issue: 13
+issue: 12
 draft: false
 sections:
   - id: 把工具执行从云端搬回内网

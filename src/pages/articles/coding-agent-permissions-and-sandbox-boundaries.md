@@ -14,7 +14,7 @@ tags:
   - 系统设计
   - 可靠性
 readingMinutes: 16
-issue: 31
+issue: 22
 draft: false
 sections:
   - id: "权限边界必须落在实际执行之前"

@@ -18,7 +18,7 @@ tags:
   - Long-Horizon Agent
   - 工程实践
 readingMinutes: 6
-issue: 15
+issue: 13
 draft: false
 sections:
   - id: 一次-27-分钟的任务-产出物是完整可用的

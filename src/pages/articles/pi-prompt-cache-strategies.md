@@ -16,7 +16,7 @@ tags:
   - Prompt Cache
   - 结构化输出
 readingMinutes: 26
-issue: 11
+issue: 10
 draft: false
 sections:
   - id: "一次任务的三段生命周期"

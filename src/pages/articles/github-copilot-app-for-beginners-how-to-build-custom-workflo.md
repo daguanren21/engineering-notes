@@ -16,7 +16,7 @@ tags:
   - 工程实践
   - Agent Workflow
 readingMinutes: 4
-issue: 28
+issue: 20
 draft: false
 sections:
   - id: canvas-是让界面去适配工作流-而不是反过来

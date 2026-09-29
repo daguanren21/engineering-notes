@@ -15,7 +15,7 @@ tags:
   - Agent Loop
   - Agent Harness
 readingMinutes: 11
-issue: 12
+issue: 11
 draft: false
 sections:
   - id: "不是升级链-而是三个职责"

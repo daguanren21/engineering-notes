@@ -15,7 +15,7 @@ tags:
   - Agent Harness
   - 实验方法
 readingMinutes: 7
-issue: 18
+issue: 15
 draft: false
 sections:
   - id: 平均值掩盖了不可复现的成功

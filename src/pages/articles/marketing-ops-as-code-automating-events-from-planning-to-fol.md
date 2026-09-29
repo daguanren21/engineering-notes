@@ -16,7 +16,7 @@ tags:
   - Agent Workflow
   - 协作系统
 readingMinutes: 8
-issue: 16
+issue: 14
 draft: false
 sections:
   - id: 把重复流程交给平台-而不是交给采购
